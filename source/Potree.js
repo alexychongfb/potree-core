@@ -1,7 +1,10 @@
 "use strict";
 
+import * as THREE from 'three';
+
 import {GreyhoundLoader} from "./loaders/GreyhoundLoader.js";
 import {POCLoader} from "./loaders/POCLoader.js";
+import {POCLoaderPhp} from "./loaders/POCLoaderPhp.js";
 import {EptLoader} from "./loaders/EptLoader.js";
 import {PointCloudOctree} from "./pointcloud/PointCloudOctree.js";
 import {PointCloudArena4D} from "./pointcloud/PointCloudArena4D.js";
@@ -105,7 +108,7 @@ function loadPointCloud(path, name, callback)
 		{
 			pointcloud.name = name;
 		}
-		
+
 		callback(
 		{
 			type: "pointcloud_loaded",
@@ -153,6 +156,16 @@ function loadPointCloud(path, name, callback)
 			if(geometry !== undefined)
 			{
 				loaded(new PointCloudArena4D(geometry));
+			}
+		});
+	}
+	else if (path.indexOf("/") > 0)
+	{
+		POCLoaderPhp.load(path, function(geometry)
+		{
+			if(geometry !== undefined)
+			{
+				loaded(new PointCloudOctree(geometry));
 			}
 		});
 	}
@@ -444,13 +457,13 @@ function updateVisibility(pointclouds, camera, renderer)
 
 	//Update DEM
 	var candidates = pointclouds.filter(p => (p.generateDEM && p.dem instanceof DEM));
-	
+
 	for(var pointcloud of candidates)
 	{
 		var updatingNodes = pointcloud.visibleNodes.filter(n => n.getLevel() <= Global.maxDEMLevel);
 		pointcloud.dem.update(updatingNodes);
 	}
-	
+
 	for(var i = 0; i < Math.min(Global.maxNodesLoading, unloadedGeometry.length); i++)
 	{
 		unloadedGeometry[i].load();

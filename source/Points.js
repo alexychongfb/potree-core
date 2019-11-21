@@ -1,5 +1,7 @@
 "use strict";
 
+import * as THREE from 'three';
+
 class Points
 {
 	constructor()

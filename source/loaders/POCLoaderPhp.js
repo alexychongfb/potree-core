@@ -15,7 +15,7 @@ import {Global} from "../Global.js";
  *
  * @author Markus Schuetz
  */
-class POCLoader
+class POCLoaderPhp
 {
 	/**
 	 * @return a point cloud octree with the root node data loaded.
@@ -28,7 +28,7 @@ class POCLoader
 	{
 		var pco = new PointCloudOctreeGeometry();
 		pco.url = url;
-		
+
 		var xhr = new XMLHttpRequest();
 		xhr.overrideMimeType("text/plain");
 		xhr.open("GET", url, true);
@@ -112,7 +112,7 @@ class POCLoader
 					var parentName = name.substring(0, name.length - 1);
 					var parentNode = nodes[parentName];
 					var level = name.length - 1;
-					var boundingBox = POCLoader.createChildAABB(parentNode.boundingBox, index);
+					var boundingBox = POCLoaderPhp.createChildAABB(parentNode.boundingBox, index);
 
 					var node = new PointCloudOctreeGeometryNode(name, pco, boundingBox);
 					node.level = level;
@@ -187,4 +187,4 @@ class POCLoader
 	}
 }
 
-export {POCLoader};
+export {POCLoaderPhp};

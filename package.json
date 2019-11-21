@@ -1,11 +1,11 @@
 {
-	"name": "potree-core",
-	"version": "1.0.7",
+	"name": "achong-potree-core",
+	"version": "0.0.10",
 	"description": "Potree wrapper for threejs applications",
-	"main": "build/potree.module.js",
+	"main": "build/potree.js",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/tentone/potree-core.git"
+		"url": "https://github.com/alexychongfb/potree-core.git"
 	},
 	"scripts": {
 		"dev": "http-server .",
@@ -22,10 +22,8 @@
 	],
 	"author": "Tentone",
 	"license": "MIT",
-	"dependencies": {},
 	"devDependencies": {
 		"http-server": "0.11.1",
-		"google-closure-compiler": "^20190301.0.0",
 		"jsdoc": "^3.5.0",
 		"rollup": "^1.0.0",
 		"rollup-plugin-strip": "^1.2.1"

@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(global = global || self, factory(global.Potree = {}));
-}(this, (function (exports) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('three')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'three'], factory) :
+	(global = global || self, factory(global.Potree = {}, global.THREE$1));
+}(this, (function (exports, THREE$1) { 'use strict';
 
 	class LRUItem
 	{
@@ -570,7 +570,7 @@
 
 		uv(position)
 		{
-			var boxSize = this.box.getSize(new THREE.Vector3());
+			var boxSize = this.box.getSize(new THREE$1.Vector3());
 
 			var u = (position.x - this.box.min.x) / boxSize.x;
 			var v = (position.y - this.box.min.y) / boxSize.y;
@@ -679,7 +679,7 @@
 			while(stack.length > 0)
 			{
 				var node = stack.pop();
-				var nodeBoxSize = node.box.getSize(new THREE.Vector3());
+				var nodeBoxSize = node.box.getSize(new THREE$1.Vector3());
 
 				//check which children intersect by transforming min/max to quadrants
 				var min = {
@@ -827,7 +827,7 @@
 
 			//update node
 			var projectedBox = node.getBoundingBox().clone().applyMatrix4(this.matrix);
-			var projectedBoxSize = projectedBox.getSize(new THREE.Vector3());
+			var projectedBoxSize = projectedBox.getSize(new THREE$1.Vector3());
 
 			var targetNodes = this.expandAndFindByBox(projectedBox, node.getLevel());
 			node.demVersion = this.version;
@@ -852,7 +852,7 @@
 
 				for(var demNode of targetNodes)
 				{
-					var boxSize = demNode.box.getSize(new THREE.Vector3());
+					var boxSize = demNode.box.getSize(new THREE$1.Vector3());
 
 					for(var i = 0; i < self.tileSize; i++)
 					{
@@ -912,7 +912,7 @@
 
 		getBoundingSphere(){}
 	}
-	class PointCloudTree extends THREE.Object3D
+	class PointCloudTree extends THREE$1.Object3D
 	{
 		constructor()
 		{
@@ -960,7 +960,7 @@
 		this.pcoGeometry = pcoGeometry;
 		this.geometry = null;
 		this.boundingBox = boundingBox;
-		this.boundingSphere = boundingBox.getBoundingSphere(new THREE.Sphere());
+		this.boundingSphere = boundingBox.getBoundingSphere(new THREE$1.Sphere());
 		this.scale = scale;
 		this.offset = offset;
 		this.children = {};
@@ -970,7 +970,7 @@
 		this.oneTimeDisposeHandlers = [];
 		this.baseLoaded = false;
 
-		var center = new THREE.Vector3();
+		var center = new THREE$1.Vector3();
 
 		var bounds = this.boundingBox.clone();
 		bounds.min.sub(this.pcoGeometry.boundingBox.getCenter(center));
@@ -989,7 +989,7 @@
 
 		//This represents the offset between the coordinate system described above
 		//and our pcoGeometry bounds.
-		this.greyhoundOffset = this.pcoGeometry.offset.clone().add(this.pcoGeometry.boundingBox.getSize(new THREE.Vector3()).multiplyScalar(0.5));
+		this.greyhoundOffset = this.pcoGeometry.offset.clone().add(this.pcoGeometry.boundingBox.getSize(new THREE$1.Vector3()).multiplyScalar(0.5));
 	}
 	PointCloudGreyhoundGeometryNode.IDCount = 0;
 
@@ -1286,7 +1286,7 @@
 		}
 	};
 
-	Object.assign(PointCloudGreyhoundGeometryNode.prototype, THREE.EventDispatcher.prototype);
+	Object.assign(PointCloudGreyhoundGeometryNode.prototype, THREE$1.EventDispatcher.prototype);
 
 	function VersionUtils(version)
 	{
@@ -1970,7 +1970,8 @@
 			{
 				url += ".bin";
 			}
-			
+			var url = node.pcoGeometry.url + 'data/?id=' + node.name;
+
 			var self = this;
 			var xhr = new XMLHttpRequest();
 			xhr.open("GET", url, true);
@@ -2032,8 +2033,8 @@
 				}
 
 				var buffers = data.attributeBuffers;
-				var tightBoundingBox = new THREE.Box3(new THREE.Vector3().fromArray(data.tightBoundingBox.min), new THREE.Vector3().fromArray(data.tightBoundingBox.max));
-				var geometry = new THREE.BufferGeometry();
+				var tightBoundingBox = new THREE$1.Box3(new THREE$1.Vector3().fromArray(data.tightBoundingBox.min), new THREE$1.Vector3().fromArray(data.tightBoundingBox.max));
+				var geometry = new THREE$1.BufferGeometry();
 
 				for(var property in buffers)
 				{
@@ -2041,41 +2042,41 @@
 
 					if(parseInt(property) === PointAttributeNames.POSITION_CARTESIAN)
 					{
-						geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(buffer), 3));
+						geometry.setAttribute("position", new THREE$1.BufferAttribute(new Float32Array(buffer), 3));
 					}
 					else if(parseInt(property) === PointAttributeNames.COLOR_PACKED)
 					{
-						geometry.setAttribute("color", new THREE.BufferAttribute(new Uint8Array(buffer), 4, true));
+						geometry.setAttribute("color", new THREE$1.BufferAttribute(new Uint8Array(buffer), 4, true));
 					}
 					else if(parseInt(property) === PointAttributeNames.INTENSITY)
 					{
-						geometry.setAttribute("intensity", new THREE.BufferAttribute(new Float32Array(buffer), 1));
+						geometry.setAttribute("intensity", new THREE$1.BufferAttribute(new Float32Array(buffer), 1));
 					}
 					else if(parseInt(property) === PointAttributeNames.CLASSIFICATION)
 					{
-						geometry.setAttribute("classification", new THREE.BufferAttribute(new Uint8Array(buffer), 1));
+						geometry.setAttribute("classification", new THREE$1.BufferAttribute(new Uint8Array(buffer), 1));
 					}
 					else if(parseInt(property) === PointAttributeNames.NORMAL_SPHEREMAPPED)
 					{
-						geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(buffer), 3));
+						geometry.setAttribute("normal", new THREE$1.BufferAttribute(new Float32Array(buffer), 3));
 					}
 					else if(parseInt(property) === PointAttributeNames.NORMAL_OCT16)
 					{
-						geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(buffer), 3));
+						geometry.setAttribute("normal", new THREE$1.BufferAttribute(new Float32Array(buffer), 3));
 					}
 					else if(parseInt(property) === PointAttributeNames.NORMAL)
 					{
-						geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(buffer), 3));
+						geometry.setAttribute("normal", new THREE$1.BufferAttribute(new Float32Array(buffer), 3));
 					}
 					else if(parseInt(property) === PointAttributeNames.INDICES)
 					{
-						var bufferAttribute = new THREE.BufferAttribute(new Uint8Array(buffer), 4);
+						var bufferAttribute = new THREE$1.BufferAttribute(new Uint8Array(buffer), 4);
 						bufferAttribute.normalized = true;
 						geometry.setAttribute("indices", bufferAttribute);
 					}
 					else if(parseInt(property) === PointAttributeNames.SPACING)
 					{
-						var bufferAttribute = new THREE.BufferAttribute(new Float32Array(buffer), 1);
+						var bufferAttribute = new THREE$1.BufferAttribute(new Float32Array(buffer), 1);
 						geometry.setAttribute("spacing", bufferAttribute);
 					}
 				}
@@ -2087,7 +2088,7 @@
 
 				node.numPoints = numPoints;
 				node.geometry = geometry;
-				node.mean = new THREE.Vector3(...data.mean);
+				node.mean = new THREE$1.Vector3(...data.mean);
 				node.tightBoundingBox = tightBoundingBox;
 				node.loaded = true;
 				node.loading = false;
@@ -2635,7 +2636,7 @@
 			var worker = Global.workerPool.getWorker(WorkerManager.LAS_DECODER);
 			worker.onmessage = function(e)
 			{
-				var geometry = new THREE.BufferGeometry();
+				var geometry = new THREE$1.BufferGeometry();
 				var numPoints = data.pointsCount;
 
 				var positions = new Float32Array(e.data.position);
@@ -2647,21 +2648,21 @@
 				var pointSourceIDs = new Uint16Array(e.data.pointSourceID);
 				var indices = new Uint8Array(e.data.indices);
 
-				geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-				geometry.setAttribute("color", new THREE.BufferAttribute(colors, 4, true));
-				geometry.setAttribute("intensity", new THREE.BufferAttribute(intensities, 1));
-				geometry.setAttribute("classification", new THREE.BufferAttribute(classifications, 1));
-				geometry.setAttribute("returnNumber", new THREE.BufferAttribute(returnNumbers, 1));
-				geometry.setAttribute("numberOfReturns", new THREE.BufferAttribute(numberOfReturns, 1));
-				geometry.setAttribute("pointSourceID", new THREE.BufferAttribute(pointSourceIDs, 1));
+				geometry.setAttribute("position", new THREE$1.BufferAttribute(positions, 3));
+				geometry.setAttribute("color", new THREE$1.BufferAttribute(colors, 4, true));
+				geometry.setAttribute("intensity", new THREE$1.BufferAttribute(intensities, 1));
+				geometry.setAttribute("classification", new THREE$1.BufferAttribute(classifications, 1));
+				geometry.setAttribute("returnNumber", new THREE$1.BufferAttribute(returnNumbers, 1));
+				geometry.setAttribute("numberOfReturns", new THREE$1.BufferAttribute(numberOfReturns, 1));
+				geometry.setAttribute("pointSourceID", new THREE$1.BufferAttribute(pointSourceIDs, 1));
 				//geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(numPoints * 3), 3));
-				geometry.setAttribute("indices", new THREE.BufferAttribute(indices, 4));
+				geometry.setAttribute("indices", new THREE$1.BufferAttribute(indices, 4));
 				geometry.attributes.indices.normalized = true;
 
-				var tightBoundingBox = new THREE.Box3
+				var tightBoundingBox = new THREE$1.Box3
 				(
-					new THREE.Vector3().fromArray(e.data.tightBoundingBox.min),
-					new THREE.Vector3().fromArray(e.data.tightBoundingBox.max)
+					new THREE$1.Vector3().fromArray(e.data.tightBoundingBox.min),
+					new THREE$1.Vector3().fromArray(e.data.tightBoundingBox.max)
 				);
 
 				geometry.boundingBox = self.node.boundingBox;
@@ -2672,7 +2673,7 @@
 				self.node.loaded = true;
 				self.node.loading = false;
 				Global.numNodesLoading--;
-				self.node.mean = new THREE.Vector3(...e.data.mean);
+				self.node.mean = new THREE$1.Vector3(...e.data.mean);
 
 				Global.workerPool.returnWorker(WorkerManager.LAS_DECODER, worker);
 			};
@@ -2708,7 +2709,7 @@
 			this.pcoGeometry = pcoGeometry;
 			this.geometry = null;
 			this.boundingBox = boundingBox;
-			this.boundingSphere = boundingBox.getBoundingSphere(new THREE.Sphere());
+			this.boundingSphere = boundingBox.getBoundingSphere(new THREE$1.Sphere());
 			this.children = {};
 			this.numPoints = 0;
 			this.level = null;
@@ -2970,7 +2971,7 @@
 
 	PointCloudOctreeGeometryNode.IDCount = 0;
 
-	Object.assign(PointCloudOctreeGeometryNode.prototype, THREE.EventDispatcher.prototype);
+	Object.assign(PointCloudOctreeGeometryNode.prototype, THREE$1.EventDispatcher.prototype);
 
 	/**
 	 * @class Loads mno files and returns a PointcloudOctree
@@ -3014,15 +3015,15 @@
 				pco.hierarchyStepSize = data.hierarchyStepSize;
 				pco.pointAttributes = data.pointAttributes;
 
-				var min = new THREE.Vector3(data.boundingBox.lx, data.boundingBox.ly, data.boundingBox.lz);
-				var max = new THREE.Vector3(data.boundingBox.ux, data.boundingBox.uy, data.boundingBox.uz);
-				var boundingBox = new THREE.Box3(min, max);
+				var min = new THREE$1.Vector3(data.boundingBox.lx, data.boundingBox.ly, data.boundingBox.lz);
+				var max = new THREE$1.Vector3(data.boundingBox.ux, data.boundingBox.uy, data.boundingBox.uz);
+				var boundingBox = new THREE$1.Box3(min, max);
 				var tightBoundingBox = boundingBox.clone();
 
 				if(data.tightBoundingBox)
 				{
-					tightBoundingBox.min.copy(new THREE.Vector3(data.tightBoundingBox.lx, data.tightBoundingBox.ly, data.tightBoundingBox.lz));
-					tightBoundingBox.max.copy(new THREE.Vector3(data.tightBoundingBox.ux, data.tightBoundingBox.uy, data.tightBoundingBox.uz));
+					tightBoundingBox.min.copy(new THREE$1.Vector3(data.tightBoundingBox.lx, data.tightBoundingBox.ly, data.tightBoundingBox.lz));
+					tightBoundingBox.max.copy(new THREE$1.Vector3(data.tightBoundingBox.ux, data.tightBoundingBox.uy, data.tightBoundingBox.uz));
 				}
 
 				var offset = min.clone();
@@ -3036,8 +3037,8 @@
 				pco.projection = data.projection;
 				pco.boundingBox = boundingBox;
 				pco.tightBoundingBox = tightBoundingBox;
-				pco.boundingSphere = boundingBox.getBoundingSphere(new THREE.Sphere());
-				pco.tightBoundingSphere = tightBoundingBox.getBoundingSphere(new THREE.Sphere());
+				pco.boundingSphere = boundingBox.getBoundingSphere(new THREE$1.Sphere());
+				pco.tightBoundingSphere = tightBoundingBox.getBoundingSphere(new THREE$1.Sphere());
 				pco.offset = offset;
 
 				//Select the appropiate loader
@@ -3117,7 +3118,7 @@
 		{
 			var min = aabb.min.clone();
 			var max = aabb.max.clone();
-			var size = new THREE.Vector3().subVectors(max, min);
+			var size = new THREE$1.Vector3().subVectors(max, min);
 
 			if((index & 0b0001) > 0)
 			{
@@ -3146,7 +3147,185 @@
 				max.x -= size.x / 2;
 			}
 
-			return new THREE.Box3(min, max);
+			return new THREE$1.Box3(min, max);
+		}
+	}
+
+	/**
+	 * @class Loads mno files and returns a PointcloudOctree
+	 * for a description of the mno binary file format, read mnoFileFormat.txt
+	 *
+	 * @author Markus Schuetz
+	 */
+	class POCLoaderPhp
+	{
+		/**
+		 * @return a point cloud octree with the root node data loaded.
+		 * loading of descendants happens asynchronously when they"re needed
+		 *
+		 * @param url
+		 * @param loadingFinishedListener executed after loading the binary has been finished
+		 */
+		static load(url, callback)
+		{
+			var pco = new PointCloudOctreeGeometry();
+			pco.url = url;
+
+			var xhr = new XMLHttpRequest();
+			xhr.overrideMimeType("text/plain");
+			xhr.open("GET", url, true);
+			xhr.onload = function()
+			{
+				var data = JSON.parse(xhr.responseText);
+				var version = new VersionUtils(data.version);
+
+				//Assume dir as absolute if it starts with http
+				if(data.octreeDir.indexOf("http") === 0)
+				{
+					pco.octreeDir = data.octreeDir;
+				}
+				else
+				{
+					pco.octreeDir = url + "/../" + data.octreeDir;
+				}
+
+				pco.spacing = data.spacing;
+				pco.hierarchyStepSize = data.hierarchyStepSize;
+				pco.pointAttributes = data.pointAttributes;
+
+				var min = new THREE$1.Vector3(data.boundingBox.lx, data.boundingBox.ly, data.boundingBox.lz);
+				var max = new THREE$1.Vector3(data.boundingBox.ux, data.boundingBox.uy, data.boundingBox.uz);
+				var boundingBox = new THREE$1.Box3(min, max);
+				var tightBoundingBox = boundingBox.clone();
+
+				if(data.tightBoundingBox)
+				{
+					tightBoundingBox.min.copy(new THREE$1.Vector3(data.tightBoundingBox.lx, data.tightBoundingBox.ly, data.tightBoundingBox.lz));
+					tightBoundingBox.max.copy(new THREE$1.Vector3(data.tightBoundingBox.ux, data.tightBoundingBox.uy, data.tightBoundingBox.uz));
+				}
+
+				var offset = min.clone();
+
+				boundingBox.min.sub(offset);
+				boundingBox.max.sub(offset);
+
+				tightBoundingBox.min.sub(offset);
+				tightBoundingBox.max.sub(offset);
+
+				pco.projection = data.projection;
+				pco.boundingBox = boundingBox;
+				pco.tightBoundingBox = tightBoundingBox;
+				pco.boundingSphere = boundingBox.getBoundingSphere(new THREE$1.Sphere());
+				pco.tightBoundingSphere = tightBoundingBox.getBoundingSphere(new THREE$1.Sphere());
+				pco.offset = offset;
+
+				//Select the appropiate loader
+				if(data.pointAttributes === "LAS" || data.pointAttributes === "LAZ")
+				{
+					pco.loader = new LASLAZLoader(data.version);
+				}
+				else
+				{
+					pco.loader = new BinaryLoader(data.version, boundingBox, data.scale);
+					pco.pointAttributes = new PointAttributes(pco.pointAttributes);
+				}
+
+				var nodes = {};
+				var name = "r";
+
+				var root = new PointCloudOctreeGeometryNode(name, pco, boundingBox);
+				root.level = 0;
+				root.hasChildren = true;
+				root.spacing = pco.spacing;
+				root.numPoints = version.upTo("1.5") ? data.hierarchy[0][1] : 0;
+
+				pco.root = root;
+				pco.root.load();
+				nodes[name] = root;
+
+				//Load remaining hierarchy
+				if(version.upTo("1.4"))
+				{
+					for(var i = 1; i < data.hierarchy.length; i++)
+					{
+						var name = data.hierarchy[i][0];
+						var numPoints = data.hierarchy[i][1];
+						var index = parseInt(name.charAt(name.length - 1));
+						var parentName = name.substring(0, name.length - 1);
+						var parentNode = nodes[parentName];
+						var level = name.length - 1;
+						var boundingBox = POCLoaderPhp.createChildAABB(parentNode.boundingBox, index);
+
+						var node = new PointCloudOctreeGeometryNode(name, pco, boundingBox);
+						node.level = level;
+						node.numPoints = numPoints;
+						node.spacing = pco.spacing / Math.pow(2, level);
+						parentNode.addChild(node);
+						nodes[name] = node;
+					}
+				}
+				pco.nodes = nodes;
+
+				callback(pco);
+			};
+
+			xhr.onerror = function(event)
+			{
+				Global.numNodesLoading--;
+				console.log("Potree: loading file failed.", url, event);
+				callback();
+			};
+
+			xhr.send(null);
+		}
+
+		static loadPointAttributes(mno)
+		{
+			var fpa = mno.pointAttributes;
+			var pa = new PointAttributes();
+
+			for(var i = 0; i < fpa.length; i++)
+			{
+				pa.add(PointAttribute[fpa[i]]);
+			}
+
+			return pa;
+		}
+
+		static createChildAABB(aabb, index)
+		{
+			var min = aabb.min.clone();
+			var max = aabb.max.clone();
+			var size = new THREE$1.Vector3().subVectors(max, min);
+
+			if((index & 0b0001) > 0)
+			{
+				min.z += size.z / 2;
+			}
+			else
+			{
+				max.z -= size.z / 2;
+			}
+
+			if((index & 0b0010) > 0)
+			{
+				min.y += size.y / 2;
+			}
+			else
+			{
+				max.y -= size.y / 2;
+			}
+
+			if((index & 0b0100) > 0)
+			{
+				min.x += size.x / 2;
+			}
+			else
+			{
+				max.x -= size.x / 2;
+			}
+
+			return new THREE$1.Box3(min, max);
 		}
 	}
 
@@ -3194,54 +3373,54 @@
 
 			worker.onmessage = function(e)
 			{
-				var g = new THREE.BufferGeometry();
+				var g = new THREE$1.BufferGeometry();
 				var numPoints = e.data.numPoints;
 
 				var position = new Float32Array(e.data.position);
-				g.setAttribute("position", new THREE.BufferAttribute(position, 3));
+				g.setAttribute("position", new THREE$1.BufferAttribute(position, 3));
 
 				var indices = new Uint8Array(e.data.indices);
-				g.setAttribute("indices", new THREE.BufferAttribute(indices, 4));
+				g.setAttribute("indices", new THREE$1.BufferAttribute(indices, 4));
 
 				if(e.data.color)
 				{
 					var color = new Uint8Array(e.data.color);
-					g.setAttribute("color", new THREE.BufferAttribute(color, 4, true));
+					g.setAttribute("color", new THREE$1.BufferAttribute(color, 4, true));
 				}
 				if(e.data.intensity)
 				{
 					var intensity = new Float32Array(e.data.intensity);
-					g.setAttribute("intensity", new THREE.BufferAttribute(intensity, 1));
+					g.setAttribute("intensity", new THREE$1.BufferAttribute(intensity, 1));
 				}
 				if(e.data.classification)
 				{
 					var classification = new Uint8Array(e.data.classification);
-					g.setAttribute("classification", new THREE.BufferAttribute(classification, 1));
+					g.setAttribute("classification", new THREE$1.BufferAttribute(classification, 1));
 				}
 				if(e.data.returnNumber)
 				{
 					var returnNumber = new Uint8Array(e.data.returnNumber);
-					g.setAttribute("returnNumber", new THREE.BufferAttribute(returnNumber, 1));
+					g.setAttribute("returnNumber", new THREE$1.BufferAttribute(returnNumber, 1));
 				}
 				if(e.data.numberOfReturns)
 				{
 					var numberOfReturns = new Uint8Array(e.data.numberOfReturns);
-					g.setAttribute("numberOfReturns", new THREE.BufferAttribute(numberOfReturns, 1));
+					g.setAttribute("numberOfReturns", new THREE$1.BufferAttribute(numberOfReturns, 1));
 				}
 				if(e.data.pointSourceId)
 				{
 					var pointSourceId = new Uint16Array(e.data.pointSourceId);
-					g.setAttribute("pointSourceID", new THREE.BufferAttribute(pointSourceId, 1));
+					g.setAttribute("pointSourceID", new THREE$1.BufferAttribute(pointSourceId, 1));
 				}
 
 				g.attributes.indices.normalized = true;
 
-				var tightBoundingBox = new THREE.Box3(
-					new THREE.Vector3().fromArray(e.data.tightBoundingBox.min),
-					new THREE.Vector3().fromArray(e.data.tightBoundingBox.max)
+				var tightBoundingBox = new THREE$1.Box3(
+					new THREE$1.Vector3().fromArray(e.data.tightBoundingBox.min),
+					new THREE$1.Vector3().fromArray(e.data.tightBoundingBox.max)
 				);
 
-				node.doneLoading(g, tightBoundingBox, numPoints, new THREE.Vector3(...e.data.mean));
+				node.doneLoading(g, tightBoundingBox, numPoints, new THREE$1.Vector3(...e.data.mean));
 
 				Global.workerPool.returnWorker(WorkerManager.EPT_BINARY_DECODER, worker);
 			};
@@ -3387,7 +3566,7 @@
 
 			worker.onmessage = (e) =>
 			{
-				var g = new THREE.BufferGeometry();
+				var g = new THREE$1.BufferGeometry();
 				var numPoints = las.pointsCount;
 
 				var positions = new Float32Array(e.data.position);
@@ -3400,22 +3579,22 @@
 				var pointSourceIDs = new Uint16Array(e.data.pointSourceID);
 				var indices = new Uint8Array(e.data.indices);
 
-				g.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-				g.setAttribute("color", new THREE.BufferAttribute(colors, 4, true));
-				g.setAttribute("intensity", new THREE.BufferAttribute(intensities, 1));
-				g.setAttribute("classification", new THREE.BufferAttribute(classifications, 1));
-				g.setAttribute("returnNumber", new THREE.BufferAttribute(returnNumbers, 1));
-				g.setAttribute("numberOfReturns", new THREE.BufferAttribute(numberOfReturns, 1));
-				g.setAttribute("pointSourceID", new THREE.BufferAttribute(pointSourceIDs, 1));
-				g.setAttribute("indices", new THREE.BufferAttribute(indices, 4));
+				g.setAttribute("position", new THREE$1.BufferAttribute(positions, 3));
+				g.setAttribute("color", new THREE$1.BufferAttribute(colors, 4, true));
+				g.setAttribute("intensity", new THREE$1.BufferAttribute(intensities, 1));
+				g.setAttribute("classification", new THREE$1.BufferAttribute(classifications, 1));
+				g.setAttribute("returnNumber", new THREE$1.BufferAttribute(returnNumbers, 1));
+				g.setAttribute("numberOfReturns", new THREE$1.BufferAttribute(numberOfReturns, 1));
+				g.setAttribute("pointSourceID", new THREE$1.BufferAttribute(pointSourceIDs, 1));
+				g.setAttribute("indices", new THREE$1.BufferAttribute(indices, 4));
 				g.attributes.indices.normalized = true;
 
-				var tightBoundingBox = new THREE.Box3(
-					new THREE.Vector3().fromArray(e.data.tightBoundingBox.min),
-					new THREE.Vector3().fromArray(e.data.tightBoundingBox.max)
+				var tightBoundingBox = new THREE$1.Box3(
+					new THREE$1.Vector3().fromArray(e.data.tightBoundingBox.min),
+					new THREE$1.Vector3().fromArray(e.data.tightBoundingBox.max)
 				);
 
-				this.node.doneLoading(g, tightBoundingBox, numPoints, new THREE.Vector3(...e.data.mean));
+				this.node.doneLoading(g, tightBoundingBox, numPoints, new THREE$1.Vector3(...e.data.mean));
 
 				Global.workerPool.returnWorker(WorkerManager.EPT_LAS_ZIP_DECODER, worker);
 			};
@@ -3439,12 +3618,12 @@
 	{
 		static toVector3(v, offset)
 		{
-			return new THREE.Vector3().fromArray(v, offset || 0);
+			return new THREE$1.Vector3().fromArray(v, offset || 0);
 		}
 
 		static toBox3(b)
 		{
-			return new THREE.Box3(Utils.toVector3(b), Utils.toVector3(b, 3));
+			return new THREE$1.Box3(Utils.toVector3(b), Utils.toVector3(b, 3));
 		};
 
 		static findDim(schema, name)
@@ -3456,7 +3635,7 @@
 
 		static sphereFrom(b)
 		{
-			return b.getBoundingSphere(new THREE.Sphere());
+			return b.getBoundingSphere(new THREE$1.Sphere());
 		}
 	}
 	class PointCloudEptGeometry
@@ -3537,7 +3716,7 @@
 		{
 			let min = this.b.min.clone();
 			let max = this.b.max.clone();
-			let dst = new THREE.Vector3().subVectors(max, min);
+			let dst = new THREE$1.Vector3().subVectors(max, min);
 
 			if(a) min.x += dst.x / 2;
 			else max.x -= dst.x / 2;
@@ -3550,7 +3729,7 @@
 
 			return new EptKey(
 					this.ept,
-					new THREE.Box3(min, max),
+					new THREE$1.Box3(min, max),
 					this.d + 1,
 					this.x * 2 + a,
 					this.y * 2 + b,
@@ -3808,9 +3987,9 @@
 				data[i * 3 + 2] = b;
 			}
 
-			var texture = new THREE.DataTexture(data, width, height, THREE.RGBAFormat);
+			var texture = new THREE$1.DataTexture(data, width, height, THREE$1.RGBAFormat);
 			texture.needsUpdate = true;
-			texture.magFilter = THREE.NearestFilter;
+			texture.magFilter = THREE$1.NearestFilter;
 
 			return texture;
 		};
@@ -3821,18 +4000,18 @@
 		static computeTransformedBoundingBox(box, transform)
 		{
 			var vertices = [
-				new THREE.Vector3(box.min.x, box.min.y, box.min.z).applyMatrix4(transform),
-				new THREE.Vector3(box.min.x, box.min.y, box.min.z).applyMatrix4(transform),
-				new THREE.Vector3(box.max.x, box.min.y, box.min.z).applyMatrix4(transform),
-				new THREE.Vector3(box.min.x, box.max.y, box.min.z).applyMatrix4(transform),
-				new THREE.Vector3(box.min.x, box.min.y, box.max.z).applyMatrix4(transform),
-				new THREE.Vector3(box.min.x, box.max.y, box.max.z).applyMatrix4(transform),
-				new THREE.Vector3(box.max.x, box.max.y, box.min.z).applyMatrix4(transform),
-				new THREE.Vector3(box.max.x, box.min.y, box.max.z).applyMatrix4(transform),
-				new THREE.Vector3(box.max.x, box.max.y, box.max.z).applyMatrix4(transform)
+				new THREE$1.Vector3(box.min.x, box.min.y, box.min.z).applyMatrix4(transform),
+				new THREE$1.Vector3(box.min.x, box.min.y, box.min.z).applyMatrix4(transform),
+				new THREE$1.Vector3(box.max.x, box.min.y, box.min.z).applyMatrix4(transform),
+				new THREE$1.Vector3(box.min.x, box.max.y, box.min.z).applyMatrix4(transform),
+				new THREE$1.Vector3(box.min.x, box.min.y, box.max.z).applyMatrix4(transform),
+				new THREE$1.Vector3(box.min.x, box.max.y, box.max.z).applyMatrix4(transform),
+				new THREE$1.Vector3(box.max.x, box.max.y, box.min.z).applyMatrix4(transform),
+				new THREE$1.Vector3(box.max.x, box.min.y, box.max.z).applyMatrix4(transform),
+				new THREE$1.Vector3(box.max.x, box.max.y, box.max.z).applyMatrix4(transform)
 			];
 
-			var boundingBox = new THREE.Box3();
+			var boundingBox = new THREE$1.Box3();
 			boundingBox.setFromPoints(vertices);
 			
 			return boundingBox;
@@ -3841,83 +4020,83 @@
 
 	var Gradients = {
 		RAINBOW: [
-			[0, new THREE.Color(0.278, 0, 0.714)],
-			[1 / 6, new THREE.Color(0, 0, 1)],
-			[2 / 6, new THREE.Color(0, 1, 1)],
-			[3 / 6, new THREE.Color(0, 1, 0)],
-			[4 / 6, new THREE.Color(1, 1, 0)],
-			[5 / 6, new THREE.Color(1, 0.64, 0)],
-			[1, new THREE.Color(1, 0, 0)]
+			[0, new THREE$1.Color(0.278, 0, 0.714)],
+			[1 / 6, new THREE$1.Color(0, 0, 1)],
+			[2 / 6, new THREE$1.Color(0, 1, 1)],
+			[3 / 6, new THREE$1.Color(0, 1, 0)],
+			[4 / 6, new THREE$1.Color(1, 1, 0)],
+			[5 / 6, new THREE$1.Color(1, 0.64, 0)],
+			[1, new THREE$1.Color(1, 0, 0)]
 		],
 		//From chroma spectral http://gka.github.io/chroma.js/
 		SPECTRAL: [
-			[0, new THREE.Color(0.3686, 0.3098, 0.6353)],
-			[0.1, new THREE.Color(0.1961, 0.5333, 0.7412)],
-			[0.2, new THREE.Color(0.4000, 0.7608, 0.6471)],
-			[0.3, new THREE.Color(0.6706, 0.8667, 0.6431)],
-			[0.4, new THREE.Color(0.9020, 0.9608, 0.5961)],
-			[0.5, new THREE.Color(1.0000, 1.0000, 0.7490)],
-			[0.6, new THREE.Color(0.9961, 0.8784, 0.5451)],
-			[0.7, new THREE.Color(0.9922, 0.6824, 0.3804)],
-			[0.8, new THREE.Color(0.9569, 0.4275, 0.2627)],
-			[0.9, new THREE.Color(0.8353, 0.2431, 0.3098)],
-			[1, new THREE.Color(0.6196, 0.0039, 0.2588)]
+			[0, new THREE$1.Color(0.3686, 0.3098, 0.6353)],
+			[0.1, new THREE$1.Color(0.1961, 0.5333, 0.7412)],
+			[0.2, new THREE$1.Color(0.4000, 0.7608, 0.6471)],
+			[0.3, new THREE$1.Color(0.6706, 0.8667, 0.6431)],
+			[0.4, new THREE$1.Color(0.9020, 0.9608, 0.5961)],
+			[0.5, new THREE$1.Color(1.0000, 1.0000, 0.7490)],
+			[0.6, new THREE$1.Color(0.9961, 0.8784, 0.5451)],
+			[0.7, new THREE$1.Color(0.9922, 0.6824, 0.3804)],
+			[0.8, new THREE$1.Color(0.9569, 0.4275, 0.2627)],
+			[0.9, new THREE$1.Color(0.8353, 0.2431, 0.3098)],
+			[1, new THREE$1.Color(0.6196, 0.0039, 0.2588)]
 		],
 		PLASMA: [
-			[0.0, new THREE.Color(0.241, 0.015, 0.610)],
-			[0.1, new THREE.Color(0.387, 0.001, 0.654)],
-			[0.2, new THREE.Color(0.524, 0.025, 0.653)],
-			[0.3, new THREE.Color(0.651, 0.125, 0.596)],
-			[0.4, new THREE.Color(0.752, 0.227, 0.513)],
-			[0.5, new THREE.Color(0.837, 0.329, 0.431)],
-			[0.6, new THREE.Color(0.907, 0.435, 0.353)],
-			[0.7, new THREE.Color(0.963, 0.554, 0.272)],
-			[0.8, new THREE.Color(0.992, 0.681, 0.195)],
-			[0.9, new THREE.Color(0.987, 0.822, 0.144)],
-			[1.0, new THREE.Color(0.940, 0.975, 0.131)]
+			[0.0, new THREE$1.Color(0.241, 0.015, 0.610)],
+			[0.1, new THREE$1.Color(0.387, 0.001, 0.654)],
+			[0.2, new THREE$1.Color(0.524, 0.025, 0.653)],
+			[0.3, new THREE$1.Color(0.651, 0.125, 0.596)],
+			[0.4, new THREE$1.Color(0.752, 0.227, 0.513)],
+			[0.5, new THREE$1.Color(0.837, 0.329, 0.431)],
+			[0.6, new THREE$1.Color(0.907, 0.435, 0.353)],
+			[0.7, new THREE$1.Color(0.963, 0.554, 0.272)],
+			[0.8, new THREE$1.Color(0.992, 0.681, 0.195)],
+			[0.9, new THREE$1.Color(0.987, 0.822, 0.144)],
+			[1.0, new THREE$1.Color(0.940, 0.975, 0.131)]
 		],
 		YELLOW_GREEN: [
-			[0, new THREE.Color(0.1647, 0.2824, 0.3451)],
-			[0.1, new THREE.Color(0.1338, 0.3555, 0.4227)],
-			[0.2, new THREE.Color(0.0610, 0.4319, 0.4864)],
-			[0.3, new THREE.Color(0.0000, 0.5099, 0.5319)],
-			[0.4, new THREE.Color(0.0000, 0.5881, 0.5569)],
-			[0.5, new THREE.Color(0.1370, 0.6650, 0.5614)],
-			[0.6, new THREE.Color(0.2906, 0.7395, 0.5477)],
-			[0.7, new THREE.Color(0.4453, 0.8099, 0.5201)],
-			[0.8, new THREE.Color(0.6102, 0.8748, 0.4850)],
-			[0.9, new THREE.Color(0.7883, 0.9323, 0.4514)],
-			[1, new THREE.Color(0.9804, 0.9804, 0.4314)]
+			[0, new THREE$1.Color(0.1647, 0.2824, 0.3451)],
+			[0.1, new THREE$1.Color(0.1338, 0.3555, 0.4227)],
+			[0.2, new THREE$1.Color(0.0610, 0.4319, 0.4864)],
+			[0.3, new THREE$1.Color(0.0000, 0.5099, 0.5319)],
+			[0.4, new THREE$1.Color(0.0000, 0.5881, 0.5569)],
+			[0.5, new THREE$1.Color(0.1370, 0.6650, 0.5614)],
+			[0.6, new THREE$1.Color(0.2906, 0.7395, 0.5477)],
+			[0.7, new THREE$1.Color(0.4453, 0.8099, 0.5201)],
+			[0.8, new THREE$1.Color(0.6102, 0.8748, 0.4850)],
+			[0.9, new THREE$1.Color(0.7883, 0.9323, 0.4514)],
+			[1, new THREE$1.Color(0.9804, 0.9804, 0.4314)]
 		],
 		VIRIDIS: [
-			[0.0, new THREE.Color(0.267, 0.005, 0.329)],
-			[0.1, new THREE.Color(0.283, 0.141, 0.458)],
-			[0.2, new THREE.Color(0.254, 0.265, 0.530)],
-			[0.3, new THREE.Color(0.207, 0.372, 0.553)],
-			[0.4, new THREE.Color(0.164, 0.471, 0.558)],
-			[0.5, new THREE.Color(0.128, 0.567, 0.551)],
-			[0.6, new THREE.Color(0.135, 0.659, 0.518)],
-			[0.7, new THREE.Color(0.267, 0.749, 0.441)],
-			[0.8, new THREE.Color(0.478, 0.821, 0.318)],
-			[0.9, new THREE.Color(0.741, 0.873, 0.150)],
-			[1.0, new THREE.Color(0.993, 0.906, 0.144)]
+			[0.0, new THREE$1.Color(0.267, 0.005, 0.329)],
+			[0.1, new THREE$1.Color(0.283, 0.141, 0.458)],
+			[0.2, new THREE$1.Color(0.254, 0.265, 0.530)],
+			[0.3, new THREE$1.Color(0.207, 0.372, 0.553)],
+			[0.4, new THREE$1.Color(0.164, 0.471, 0.558)],
+			[0.5, new THREE$1.Color(0.128, 0.567, 0.551)],
+			[0.6, new THREE$1.Color(0.135, 0.659, 0.518)],
+			[0.7, new THREE$1.Color(0.267, 0.749, 0.441)],
+			[0.8, new THREE$1.Color(0.478, 0.821, 0.318)],
+			[0.9, new THREE$1.Color(0.741, 0.873, 0.150)],
+			[1.0, new THREE$1.Color(0.993, 0.906, 0.144)]
 		],
 		INFERNO: [
-			[0.0, new THREE.Color(0.077, 0.042, 0.206)],
-			[0.1, new THREE.Color(0.225, 0.036, 0.388)],
-			[0.2, new THREE.Color(0.373, 0.074, 0.432)],
-			[0.3, new THREE.Color(0.522, 0.128, 0.420)],
-			[0.4, new THREE.Color(0.665, 0.182, 0.370)],
-			[0.5, new THREE.Color(0.797, 0.255, 0.287)],
-			[0.6, new THREE.Color(0.902, 0.364, 0.184)],
-			[0.7, new THREE.Color(0.969, 0.516, 0.063)],
-			[0.8, new THREE.Color(0.988, 0.683, 0.072)],
-			[0.9, new THREE.Color(0.961, 0.859, 0.298)],
-			[1.0, new THREE.Color(0.988, 0.998, 0.645)]
+			[0.0, new THREE$1.Color(0.077, 0.042, 0.206)],
+			[0.1, new THREE$1.Color(0.225, 0.036, 0.388)],
+			[0.2, new THREE$1.Color(0.373, 0.074, 0.432)],
+			[0.3, new THREE$1.Color(0.522, 0.128, 0.420)],
+			[0.4, new THREE$1.Color(0.665, 0.182, 0.370)],
+			[0.5, new THREE$1.Color(0.797, 0.255, 0.287)],
+			[0.6, new THREE$1.Color(0.902, 0.364, 0.184)],
+			[0.7, new THREE$1.Color(0.969, 0.516, 0.063)],
+			[0.8, new THREE$1.Color(0.988, 0.683, 0.072)],
+			[0.9, new THREE$1.Color(0.961, 0.859, 0.298)],
+			[1.0, new THREE$1.Color(0.988, 0.998, 0.645)]
 		],
 		GRAYSCALE: [
-			[0, new THREE.Color(0, 0, 0)],
-			[1, new THREE.Color(1, 1, 1)]
+			[0, new THREE$1.Color(0, 0, 0)],
+			[1, new THREE$1.Color(1, 1, 1)]
 		]
 	};
 
@@ -3930,8 +4109,8 @@ precision highp int;
 
 #define MAX_CLIP_POLYGONS 8
 
-` + THREE.ShaderChunk.common + `
-` + THREE.ShaderChunk.logdepthbuf_pars_vertex + `
+` + THREE$1.ShaderChunk.common + `
+` + THREE$1.ShaderChunk.logdepthbuf_pars_vertex + `
 
 attribute vec3 position;
 attribute vec3 color;
@@ -4621,7 +4800,7 @@ void main()
 	gl_PointSize = pointSize;
 	vPointSize = pointSize;
 
-	` + THREE.ShaderChunk.logdepthbuf_vertex + `
+	` + THREE$1.ShaderChunk.logdepthbuf_vertex + `
 
 	//COLOR
 	vColor = getColor();
@@ -4729,8 +4908,8 @@ void main()
 precision highp float;
 precision highp int;
 
-` + THREE.ShaderChunk.common + `
-` + THREE.ShaderChunk.logdepthbuf_pars_fragment + `
+` + THREE$1.ShaderChunk.common + `
+` + THREE$1.ShaderChunk.logdepthbuf_pars_fragment + `
 
 uniform mat4 viewMatrix;
 uniform mat4 uViewInv;
@@ -4799,7 +4978,7 @@ void main()
 		#endif
 	#endif
 	
-	` + THREE.ShaderChunk.logdepthbuf_fragment +  `
+	` + THREE$1.ShaderChunk.logdepthbuf_fragment +  `
 
 	#if defined weighted_splats
 		float distance = 2.0 * length(gl_PointCoord.xy - 0.5);
@@ -4811,15 +4990,15 @@ void main()
 	#endif
 }`;
 
-	class PointCloudMaterial extends THREE.RawShaderMaterial
+	class PointCloudMaterial extends THREE$1.RawShaderMaterial
 	{
 		constructor(parameters = {})
 		{
 			super();
 			
-			this.visibleNodesTexture = HelperUtils.generateDataTexture(2048, 1, new THREE.Color(0xffffff));
-			this.visibleNodesTexture.minFilter = THREE.NearestFilter;
-			this.visibleNodesTexture.magFilter = THREE.NearestFilter;
+			this.visibleNodesTexture = HelperUtils.generateDataTexture(2048, 1, new THREE$1.Color(0xffffff));
+			this.visibleNodesTexture.minFilter = THREE$1.NearestFilter;
+			this.visibleNodesTexture.magFilter = THREE$1.NearestFilter;
 
 			var getValid = function(a, b)
 			{
@@ -4884,7 +5063,7 @@ void main()
 				screenHeight: {type: "f", value: 1.0},
 				near: {type: "f", value: 0.1},
 				far: {type: "f", value: 1.0},
-				uColor: {type: "c", value: new THREE.Color( 0xffffff )},
+				uColor: {type: "c", value: new THREE$1.Color( 0xffffff )},
 				uOpacity: {type: "f", value: 1.0},
 				size: {type: "f", value: pointSize},
 				minSize: {type: "f", value: minSize},
@@ -4947,7 +5126,7 @@ void main()
 			var defines = this.getDefines();
 			this.vertexShader = defines + Shaders.vertex;
 			this.fragmentShader = defines + Shaders.fragment;
-			this.vertexColors = THREE.VertexColors;
+			this.vertexColors = THREE$1.VertexColors;
 		}
 
 		setDefine(key, value)
@@ -4979,24 +5158,24 @@ void main()
 
 			if(this.opacity === 1.0)
 			{
-				this.blending = THREE.NoBlending;
+				this.blending = THREE$1.NoBlending;
 				this.transparent = false;
 				this.depthTest = true;
 				this.depthWrite = true;
-				this.depthFunc = THREE.LessEqualDepth;
+				this.depthFunc = THREE$1.LessEqualDepth;
 			}
 			else if(this.opacity < 1.0 && !this.useEDL)
 			{
-				this.blending = THREE.AdditiveBlending;
+				this.blending = THREE$1.AdditiveBlending;
 				this.transparent = true;
 				this.depthTest = false;
 				this.depthWrite = true;
-				this.depthFunc = THREE.AlwaysDepth;
+				this.depthFunc = THREE$1.AlwaysDepth;
 			}
 
 			if(this.weighted)
 			{
-				this.blending = THREE.AdditiveBlending;
+				this.blending = THREE$1.AdditiveBlending;
 				this.transparent = true;
 				this.depthTest = true;
 				this.depthWrite = false;
@@ -5913,9 +6092,9 @@ void main()
 			context.fillStyle = ctxGradient;
 			context.fill();
 
-			var texture = new THREE.CanvasTexture(canvas);
+			var texture = new THREE$1.CanvasTexture(canvas);
 			texture.needsUpdate = true;
-			texture.minFilter = THREE.LinearFilter;
+			texture.minFilter = THREE$1.LinearFilter;
 
 			return texture;
 		}
@@ -5950,8 +6129,8 @@ void main()
 					data[4 * i + 3] = 255 * color.w;
 				}
 			}
-			var texture = new THREE.DataTexture(data, width, height, THREE.RGBAFormat);
-			texture.magFilter = THREE.NearestFilter;
+			var texture = new THREE$1.DataTexture(data, width, height, THREE$1.RGBAFormat);
+			texture.magFilter = THREE$1.NearestFilter;
 			texture.needsUpdate = true;
 			return texture;
 		}
@@ -6055,12 +6234,12 @@ void main()
 			var stride = buffer.stride;
 			var view = new DataView(buffer.data);
 
-			var worldToBox = new THREE.Matrix4().getInverse(boxNode.matrixWorld);
-			var objectToBox = new THREE.Matrix4().multiplyMatrices(worldToBox, this.sceneNode.matrixWorld);
+			var worldToBox = new THREE$1.Matrix4().getInverse(boxNode.matrixWorld);
+			var objectToBox = new THREE$1.Matrix4().multiplyMatrices(worldToBox, this.sceneNode.matrixWorld);
 
 			var inBox = [];
 
-			var pos = new THREE.Vector4();
+			var pos = new THREE$1.Vector4();
 			for(var i = 0; i < buffer.numElements; i++)
 			{
 				var x = view.getFloat32(i * stride + posOffset + 0, true);
@@ -6077,7 +6256,7 @@ void main()
 						if(-0.5 < pos.z && pos.z < 0.5)
 						{
 							pos.set(x, y, z, 1).applyMatrix4(this.sceneNode.matrixWorld);
-							inBox.push(new THREE.Vector3(pos.x, pos.y, pos.z));
+							inBox.push(new THREE$1.Vector3(pos.x, pos.y, pos.z));
 						}
 					}
 				}
@@ -6100,7 +6279,7 @@ void main()
 			this.pointBudget = Infinity;
 			this.pcoGeometry = geometry;
 			this.boundingBox = this.pcoGeometry.boundingBox;
-			this.boundingSphere = this.boundingBox.getBoundingSphere(new THREE.Sphere());
+			this.boundingSphere = this.boundingBox.getBoundingSphere(new THREE$1.Sphere());
 			this.material = material || new PointCloudMaterial();
 			this.visiblePointsTarget = 2 * 1000 * 1000;
 			this.minimumNodePixelSize = 150;
@@ -6111,14 +6290,14 @@ void main()
 			this.showBoundingBox = false;
 			this.boundingBoxNodes = [];
 			this.loadQueue = [];
-			this.visibleBounds = new THREE.Box3();
+			this.visibleBounds = new THREE$1.Box3();
 			this.visibleNodes = [];
 			this.visibleGeometry = [];
 			this.generateDEM = false;
 			this.profileRequests = [];
 			this.name = "";
 
-			this.tempVector3 = new THREE.Vector3();
+			this.tempVector3 = new THREE$1.Vector3();
 
 			var box = [this.pcoGeometry.tightBoundingBox, this.getBoundingBoxWorld()].find(v => v !== undefined);
 
@@ -6159,7 +6338,7 @@ void main()
 		{
 			var node = new PointCloudOctreeNode();
 
-			var sceneNode = new THREE.Points(geometryNode.geometry, this.material);
+			var sceneNode = new THREE$1.Points(geometryNode.geometry, this.material);
 			sceneNode.name = geometryNode.name;
 			sceneNode.position.copy(geometryNode.boundingBox.min);
 			sceneNode.frustumCulled = true;
@@ -6251,8 +6430,8 @@ void main()
 				}
 			}
 
-			this.visibleBounds.min = new THREE.Vector3(Infinity, Infinity, Infinity);
-			this.visibleBounds.max = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
+			this.visibleBounds.min = new THREE$1.Vector3(Infinity, Infinity, Infinity);
+			this.visibleBounds.max = new THREE$1.Vector3(-Infinity, -Infinity, -Infinity);
 
 			for(var i = 0; i < leafNodes.length; i++)
 			{
@@ -6270,7 +6449,7 @@ void main()
 			material.spacing = this.pcoGeometry.spacing * Math.max(this.scale.x, this.scale.y, this.scale.z);
 			material.near = camera.near;
 			material.far = camera.far;
-			material.uniforms.octreeSize.value = this.pcoGeometry.boundingBox.getSize(new THREE.Vector3()).x;
+			material.uniforms.octreeSize.value = this.pcoGeometry.boundingBox.getSize(new THREE$1.Vector3()).x;
 		}
 
 		computeVisibilityTextureData(nodes, camera)
@@ -6299,7 +6478,7 @@ void main()
 			nodes.sort(sort);
 
 			//code sample taken from three.js src/math/Ray.js
-			var v1 = new THREE.Vector3();
+			var v1 = new THREE$1.Vector3();
 			var intersectSphereBack = (ray, sphere) =>
 			{
 				v1.subVectors(sphere.center, ray.origin);
@@ -6371,11 +6550,11 @@ void main()
 				var bBox = node.getBoundingBox().clone();
 				//bBox.applyMatrix4(node.sceneNode.matrixWorld);
 				//bBox.applyMatrix4(camera.matrixWorldInverse);
-				var bSphere = bBox.getBoundingSphere(new THREE.Sphere());
+				var bSphere = bBox.getBoundingSphere(new THREE$1.Sphere());
 				bSphere.applyMatrix4(node.sceneNode.matrixWorld);
 				bSphere.applyMatrix4(camera.matrixWorldInverse);
 
-				var ray = new THREE.Ray(camera.position, camera.getWorldDirection(this.tempVector3));
+				var ray = new THREE$1.Ray(camera.position, camera.getWorldDirection(this.tempVector3));
 				var distance = intersectSphereBack(ray, bSphere);
 				var distance2 = bSphere.center.distanceTo(camera.position) + bSphere.radius;
 				if(distance === null)
@@ -6439,17 +6618,17 @@ void main()
 		nodeIntersectsProfile(node, profile)
 		{
 			var bbWorld = node.boundingBox.clone().applyMatrix4(this.matrixWorld);
-			var bsWorld = bbWorld.getBoundingSphere(new THREE.Sphere());
+			var bsWorld = bbWorld.getBoundingSphere(new THREE$1.Sphere());
 
 			var intersects = false;
 
 			for(var i = 0; i < profile.points.length - 1; i++)
 			{
 
-				var start = new THREE.Vector3(profile.points[i + 0].x, profile.points[i + 0].y, bsWorld.center.z);
-				var end = new THREE.Vector3(profile.points[i + 1].x, profile.points[i + 1].y, bsWorld.center.z);
+				var start = new THREE$1.Vector3(profile.points[i + 0].x, profile.points[i + 0].y, bsWorld.center.z);
+				var end = new THREE$1.Vector3(profile.points[i + 1].x, profile.points[i + 1].y, bsWorld.center.z);
 
-				var closest = new THREE.Line3(start, end).closestPointToPoint(bsWorld.center, true);
+				var closest = new THREE$1.Line3(start, end).closestPointToPoint(bsWorld.center, true);
 				var distance = closest.distanceTo(bsWorld.center);
 
 				intersects = intersects || (distance < (bsWorld.radius + profile.width));
@@ -6468,7 +6647,7 @@ void main()
 				var node = nodes[i];
 				//var inverseWorld = new THREE.Matrix4().getInverse(node.matrixWorld);
 				//var sphere = node.getBoundingSphere(new THREE.Sphere()).clone().applyMatrix4(node.sceneNode.matrixWorld);
-				var sphere = node.getBoundingSphere(new THREE.Sphere()).clone().applyMatrix4(this.matrixWorld);
+				var sphere = node.getBoundingSphere(new THREE$1.Sphere()).clone().applyMatrix4(this.matrixWorld);
 
 				if(_ray.intersectsSphere(sphere))
 				{
@@ -6537,7 +6716,7 @@ void main()
 			var transform = this.matrixWorld;
 			var tBox = HelperUtils.computeTransformedBoundingBox(box, transform);
 
-			this.position.set(0, 0, 0).sub(tBox.getCenter(new THREE.Vector3()));
+			this.position.set(0, 0, 0).sub(tBox.getCenter(new THREE$1.Vector3()));
 		};
 
 		moveToGroundPlane()
@@ -6583,8 +6762,8 @@ void main()
 
 			var points = {
 				segments: [],
-				boundingBox: new THREE.Box3(),
-				projectedBoundingBox: new THREE.Box2()
+				boundingBox: new THREE$1.Box3(),
+				projectedBoundingBox: new THREE$1.Box2()
 			};
 
 			//evaluate segments
@@ -6608,7 +6787,7 @@ void main()
 			}
 
 			//add projection functions to the segments
-			var mileage = new THREE.Vector3();
+			var mileage = new THREE$1.Vector3();
 			for(var i = 0; i < points.segments.length; i++)
 			{
 				var segment = points.segments[i];
@@ -6622,8 +6801,8 @@ void main()
 					var mileage = _mileage;
 					var boundingBox = _boundingBox;
 
-					var xAxis = new THREE.Vector3(1, 0, 0);
-					var dir = new THREE.Vector3().subVectors(end, start);
+					var xAxis = new THREE$1.Vector3(1, 0, 0);
+					var dir = new THREE$1.Vector3().subVectors(end, start);
 					dir.y = 0;
 					dir.normalize();
 					var alpha = Math.acos(xAxis.dot(dir));
@@ -6634,9 +6813,9 @@ void main()
 
 					return function(position)
 					{
-						var toOrigin = new THREE.Matrix4().makeTranslation(-start.x, -boundingBox.min.y, -start.z);
-						var alignWithX = new THREE.Matrix4().makeRotationY(-alpha);
-						var applyMileage = new THREE.Matrix4().makeTranslation(mileage.x, 0, 0);
+						var toOrigin = new THREE$1.Matrix4().makeTranslation(-start.x, -boundingBox.min.y, -start.z);
+						var alignWithX = new THREE$1.Matrix4().makeRotationY(-alpha);
+						var applyMileage = new THREE$1.Matrix4().makeTranslation(mileage.x, 0, 0);
 
 						var pos = position.clone();
 						pos.applyMatrix4(toOrigin);
@@ -6649,7 +6828,7 @@ void main()
 
 				segment.project = project;
 
-				mileage.x += new THREE.Vector3(start.x, 0, start.z).distanceTo(new THREE.Vector3(end.x, 0, end.z));
+				mileage.x += new THREE$1.Vector3(start.x, 0, start.z).distanceTo(new THREE$1.Vector3(end.x, 0, end.z));
 				mileage.y += end.y - start.y;
 			}
 
@@ -6707,7 +6886,7 @@ void main()
 			var pickWindowSize = getVal(params.pickWindowSize, 17);
 			var pickOutsideClipRegion = getVal(params.pickOutsideClipRegion, false);
 
-			var size = renderer.getSize(new THREE.Vector3());
+			var size = renderer.getSize(new THREE$1.Vector3());
 
 			var width = Math.ceil(getVal(params.width, size.width));
 			var height = Math.ceil(getVal(params.height, size.height));
@@ -6724,17 +6903,17 @@ void main()
 
 			if(!this.pickState)
 			{
-				var scene = new THREE.Scene();
+				var scene = new THREE$1.Scene();
 
 				var material = new PointCloudMaterial();
 				material.pointColorType = PointColorType.POINT_INDEX;
 
-				var renderTarget = new THREE.WebGLRenderTarget(
+				var renderTarget = new THREE$1.WebGLRenderTarget(
 					1, 1,
 					{
-						minFilter: THREE.LinearFilter,
-						magFilter: THREE.NearestFilter,
-						format: THREE.RGBAFormat
+						minFilter: THREE$1.LinearFilter,
+						magFilter: THREE$1.NearestFilter,
+						format: THREE$1.RGBAFormat
 					}
 				);
 
@@ -6776,7 +6955,7 @@ void main()
 
 			pickState.renderTarget.setSize(width, height);
 
-			var pixelPos = new THREE.Vector2(params.x, params.y);
+			var pixelPos = new THREE$1.Vector2(params.x, params.y);
 
 			var gl = renderer.getContext();
 			gl.enable(gl.SCISSOR_TEST);
@@ -6784,7 +6963,7 @@ void main()
 
 			renderer.state.buffers.depth.setTest(pickMaterial.depthTest);
 			renderer.state.buffers.depth.setMask(pickMaterial.depthWrite);
-			renderer.state.setBlending(THREE.NoBlending);
+			renderer.state.setBlending(THREE$1.NoBlending);
 
 			//Render
 			renderer.setRenderTarget(pickState.renderTarget);
@@ -6883,7 +7062,7 @@ void main()
 						var y = attribute.array[3 * hit.pIndex + 1];
 						var z = attribute.array[3 * hit.pIndex + 2];
 
-						var position = new THREE.Vector3(x, y, z);
+						var position = new THREE$1.Vector3(x, y, z);
 						position.applyMatrix4(pc.matrixWorld);
 
 						point[attributeName] = position;
@@ -6938,8 +7117,8 @@ void main()
 
 		*getFittedBoxGen(boxNode)
 		{
-			var shrinkedLocalBounds = new THREE.Box3();
-			var worldToBox = new THREE.Matrix4().getInverse(boxNode.matrixWorld);
+			var shrinkedLocalBounds = new THREE$1.Box3();
+			var worldToBox = new THREE$1.Matrix4().getInverse(boxNode.matrixWorld);
 
 			for(var node of this.visibleNodes)
 			{
@@ -6954,9 +7133,9 @@ void main()
 				var stride = buffer.stride;
 				var view = new DataView(buffer.data);
 
-				var objectToBox = new THREE.Matrix4().multiplyMatrices(worldToBox, node.sceneNode.matrixWorld);
+				var objectToBox = new THREE$1.Matrix4().multiplyMatrices(worldToBox, node.sceneNode.matrixWorld);
 
-				var pos = new THREE.Vector4();
+				var pos = new THREE$1.Vector4();
 				for(var i = 0; i < buffer.numElements; i++)
 				{
 					var x = view.getFloat32(i * stride + posOffset + 0, true);
@@ -6982,14 +7161,14 @@ void main()
 			}
 
 
-			var fittedPosition = shrinkedLocalBounds.getCenter(new THREE.Vector3()).applyMatrix4(boxNode.matrixWorld);
+			var fittedPosition = shrinkedLocalBounds.getCenter(new THREE$1.Vector3()).applyMatrix4(boxNode.matrixWorld);
 
-			var fitted = new THREE.Object3D();
+			var fitted = new THREE$1.Object3D();
 			fitted.position.copy(fittedPosition);
 			fitted.scale.copy(boxNode.scale);
 			fitted.rotation.copy(boxNode.rotation);
 
-			var ds = new THREE.Vector3().subVectors(shrinkedLocalBounds.max, shrinkedLocalBounds.min);
+			var ds = new THREE$1.Vector3().subVectors(shrinkedLocalBounds.max, shrinkedLocalBounds.min);
 			fitted.scale.multiply(ds);
 
 			yield fitted;
@@ -6997,8 +7176,8 @@ void main()
 
 		getFittedBox(boxNode, maxLevel = Infinity)
 		{
-			var shrinkedLocalBounds = new THREE.Box3();
-			var worldToBox = new THREE.Matrix4().getInverse(boxNode.matrixWorld);
+			var shrinkedLocalBounds = new THREE$1.Box3();
+			var worldToBox = new THREE$1.Matrix4().getInverse(boxNode.matrixWorld);
 
 			for(var node of this.visibleNodes)
 			{
@@ -7013,9 +7192,9 @@ void main()
 				var stride = buffer.stride;
 				var view = new DataView(buffer.data);
 
-				var objectToBox = new THREE.Matrix4().multiplyMatrices(worldToBox, node.sceneNode.matrixWorld);
+				var objectToBox = new THREE$1.Matrix4().multiplyMatrices(worldToBox, node.sceneNode.matrixWorld);
 
-				var pos = new THREE.Vector4();
+				var pos = new THREE$1.Vector4();
 				for(var i = 0; i < buffer.numElements; i++)
 				{
 					var x = view.getFloat32(i * stride + posOffset + 0, true);
@@ -7038,14 +7217,14 @@ void main()
 				}
 			}
 
-			var fittedPosition = shrinkedLocalBounds.getCenter(new THREE.Vector3()).applyMatrix4(boxNode.matrixWorld);
+			var fittedPosition = shrinkedLocalBounds.getCenter(new THREE$1.Vector3()).applyMatrix4(boxNode.matrixWorld);
 
-			var fitted = new THREE.Object3D();
+			var fitted = new THREE$1.Object3D();
 			fitted.position.copy(fittedPosition);
 			fitted.scale.copy(boxNode.scale);
 			fitted.rotation.copy(boxNode.rotation);
 
-			var ds = new THREE.Vector3().subVectors(shrinkedLocalBounds.max, shrinkedLocalBounds.min);
+			var ds = new THREE$1.Vector3().subVectors(shrinkedLocalBounds.max, shrinkedLocalBounds.min);
 			fitted.scale.multiply(ds);
 
 			return fitted;
@@ -7141,7 +7320,7 @@ void main()
 			}
 
 			var node = new PointCloudArena4DNode();
-			var sceneNode = THREE.PointCloud(geometryNode.geometry, this.kdtree.material);
+			var sceneNode = THREE$1.PointCloud(geometryNode.geometry, this.kdtree.material);
 			sceneNode.visible = false;
 
 			node.kdtree = this.kdtree;
@@ -7206,7 +7385,7 @@ void main()
 			this.boundingSphere = this.pcoGeometry.boundingSphere;
 			this.material = new PointCloudMaterial(
 			{
-				vertexColors: THREE.VertexColors,
+				vertexColors: THREE$1.VertexColors,
 				size: 0.05,
 				treeType: TreeType.KDTREE
 			});
@@ -7254,7 +7433,7 @@ void main()
 		{
 			var node = new PointCloudArena4DNode();
 
-			var sceneNode = new THREE.Points(geometryNode.geometry, this.material);
+			var sceneNode = new THREE$1.Points(geometryNode.geometry, this.material);
 			sceneNode.frustumCulled = true;
 			sceneNode.onBeforeRender = (_this, scene, camera, geometry, material, group) =>
 			{
@@ -7344,7 +7523,7 @@ void main()
 			}
 
 			//material.uniforms.octreeSize.value = this.boundingBox.size().x;
-			var bbSize = this.boundingBox.getSize(new THREE.Vector3());
+			var bbSize = this.boundingBox.getSize(new THREE$1.Vector3());
 			material.bbSize = [bbSize.x, bbSize.y, bbSize.z];
 		}
 
@@ -7417,7 +7596,7 @@ void main()
 			for(var i = 0; i < nodes.length; i++)
 			{
 				var node = nodes[i];
-				var sphere = node.getBoundingSphere(new THREE.Sphere()).clone().applyMatrix4(node.sceneNode.matrixWorld);
+				var sphere = node.getBoundingSphere(new THREE$1.Sphere()).clone().applyMatrix4(node.sceneNode.matrixWorld);
 				//TODO Unused: var box = node.getBoundingBox().clone().applyMatrix4(node.sceneNode.matrixWorld);
 
 				if(_ray.intersectsSphere(sphere))
@@ -7445,7 +7624,7 @@ void main()
 			var pickWindowSize = getVal(params.pickWindowSize, 17);
 			var pickOutsideClipRegion = getVal(params.pickOutsideClipRegion, false);
 
-			var size = renderer.getSize(new THREE.Vector3());
+			var size = renderer.getSize(new THREE$1.Vector3());
 
 			var width = Math.ceil(getVal(params.width, size.width));
 			var height = Math.ceil(getVal(params.height, size.height));
@@ -7462,17 +7641,17 @@ void main()
 
 			if(!this.pickState)
 			{
-				var scene = new THREE.Scene();
+				var scene = new THREE$1.Scene();
 
 				var material = new PointCloudMaterial();
 				material.pointColorType = PointColorType.POINT_INDEX;
 
-				var renderTarget = new THREE.WebGLRenderTarget(
+				var renderTarget = new THREE$1.WebGLRenderTarget(
 					1, 1,
 					{
-						minFilter: THREE.LinearFilter,
-						magFilter: THREE.NearestFilter,
-						format: THREE.RGBAFormat
+						minFilter: THREE$1.LinearFilter,
+						magFilter: THREE$1.NearestFilter,
+						format: THREE$1.RGBAFormat
 					}
 				);
 
@@ -7512,7 +7691,7 @@ void main()
 
 			pickState.renderTarget.setSize(width, height);
 
-			var pixelPos = new THREE.Vector2(params.x, params.y);
+			var pixelPos = new THREE$1.Vector2(params.x, params.y);
 
 			var gl = renderer.getContext();
 			gl.enable(gl.SCISSOR_TEST);
@@ -7520,7 +7699,7 @@ void main()
 
 			renderer.state.buffers.depth.setTest(pickMaterial.depthTest);
 			renderer.state.buffers.depth.setMask(pickMaterial.depthWrite);
-			renderer.state.setBlending(THREE.NoBlending);
+			renderer.state.setBlending(THREE$1.NoBlending);
 
 			renderer.clearTarget(pickState.renderTarget, true, true, true);
 			renderer.setRenderTarget(pickState.renderTarget);
@@ -7620,7 +7799,7 @@ void main()
 						var y = attribute.array[3 * hit.pIndex + 1];
 						var z = attribute.array[3 * hit.pIndex + 2];
 
-						var position = new THREE.Vector3(x, y, z);
+						var position = new THREE$1.Vector3(x, y, z);
 						position.applyMatrix4(pc.matrixWorld);
 
 						point[attributeName] = position;
@@ -7860,7 +8039,7 @@ void main()
 					var indices = new ArrayBuffer(numPoints * 4);
 					var u32Indices = new Uint32Array(indices);
 
-					var tightBoundingBox = new THREE.Box3();
+					var tightBoundingBox = new THREE$1.Box3();
 
 					for(var i = 0; i < numPoints; i++)
 					{
@@ -7876,7 +8055,7 @@ void main()
 
 						var classification = sourceView.getUint8(i * 17 + 16, true);
 
-						tightBoundingBox.expandByPoint(new THREE.Vector3(x, y, z));
+						tightBoundingBox.expandByPoint(new THREE$1.Vector3(x, y, z));
 
 						position[i * 3 + 0] = x;
 						position[i * 3 + 1] = y;
@@ -7893,13 +8072,13 @@ void main()
 						u32Indices[i] = i;
 					}
 
-					var geometry = new THREE.BufferGeometry();
-					geometry.setAttribute("position", new THREE.BufferAttribute(position, 3));
-					geometry.setAttribute("color", new THREE.BufferAttribute(color, 4, true));
-					geometry.setAttribute("intensity", new THREE.BufferAttribute(intensities, 1));
-					geometry.setAttribute("classification", new THREE.BufferAttribute(classifications, 1));
+					var geometry = new THREE$1.BufferGeometry();
+					geometry.setAttribute("position", new THREE$1.BufferAttribute(position, 3));
+					geometry.setAttribute("color", new THREE$1.BufferAttribute(color, 4, true));
+					geometry.setAttribute("intensity", new THREE$1.BufferAttribute(intensities, 1));
+					geometry.setAttribute("classification", new THREE$1.BufferAttribute(classifications, 1));
 					{
-						var bufferAttribute = new THREE.BufferAttribute(new Uint8Array(indices), 4, true);
+						var bufferAttribute = new THREE$1.BufferAttribute(new Uint8Array(indices), 4, true);
 						geometry.setAttribute("indices", bufferAttribute);
 					}
 
@@ -7947,7 +8126,7 @@ void main()
 			return this.numPoints;
 		}
 	}
-	class PointCloudArena4DGeometry extends THREE.EventDispatcher
+	class PointCloudArena4DGeometry extends THREE$1.EventDispatcher
 	{
 		constructor()
 		{
@@ -7990,9 +8169,9 @@ void main()
 						geometry.numNodes = response.Nodes;
 						geometry.numPoints = response.Points;
 						geometry.version = response.Version;
-						geometry.boundingBox = new THREE.Box3(
-							new THREE.Vector3().fromArray(response.BoundingBox.slice(0, 3)),
-							new THREE.Vector3().fromArray(response.BoundingBox.slice(3, 6))
+						geometry.boundingBox = new THREE$1.Box3(
+							new THREE$1.Vector3().fromArray(response.BoundingBox.slice(0, 3)),
+							new THREE$1.Vector3().fromArray(response.BoundingBox.slice(3, 6))
 						);
 						if(response.Spacing)
 						{
@@ -8005,10 +8184,10 @@ void main()
 						geometry.boundingBox.max.add(offset);
 						geometry.offset = offset;
 
-						var center = new THREE.Vector3();
+						var center = new THREE$1.Vector3();
 						geometry.boundingBox.getCenter(center);
-						var radius = geometry.boundingBox.getSize(new THREE.Vector3()).length() / 2;
-						geometry.boundingSphere = new THREE.Sphere(center, radius);
+						var radius = geometry.boundingBox.getSize(new THREE$1.Vector3()).length() / 2;
+						geometry.boundingSphere = new THREE$1.Sphere(center, radius);
 
 						geometry.loadHierarchy();
 
@@ -8096,7 +8275,7 @@ void main()
 					{
 						var parent = stack[stack.length - 1];
 						node.boundingBox = parent.boundingBox.clone();
-						var parentBBSize = parent.boundingBox.getSize(new THREE.Vector3());
+						var parentBBSize = parent.boundingBox.getSize(new THREE$1.Vector3());
 
 						if(parent.hasLeft && !parent.left)
 						{
@@ -8117,10 +8296,10 @@ void main()
 							}
 
 							
-							var center = new THREE.Vector3();
+							var center = new THREE$1.Vector3();
 							node.boundingBox.getCenter(center);
-							var radius = node.boundingBox.getSize(new THREE.Vector3()).length() / 2;
-							node.boundingSphere = new THREE.Sphere(center, radius);
+							var radius = node.boundingBox.getSize(new THREE$1.Vector3()).length() / 2;
+							node.boundingSphere = new THREE$1.Sphere(center, radius);
 						}
 						else
 						{
@@ -8140,10 +8319,10 @@ void main()
 								node.boundingBox.min.z = node.boundingBox.min.z + parentBBSize.z / 2;
 							}
 
-							var center = new THREE.Vector3();
+							var center = new THREE$1.Vector3();
 							node.boundingBox.getCenter(center);
-							var radius = node.boundingBox.getSize(new THREE.Vector3()).length() / 2;
-							node.boundingSphere = new THREE.Sphere(center, radius);
+							var radius = node.boundingBox.getSize(new THREE$1.Vector3()).length() / 2;
+							node.boundingSphere = new THREE$1.Sphere(center, radius);
 						}
 					}
 					else
@@ -8151,13 +8330,13 @@ void main()
 						root = node;
 						root.boundingBox = this.boundingBox.clone();
 
-						var center = new THREE.Vector3();
+						var center = new THREE$1.Vector3();
 						root.boundingBox.getCenter(center);
-						var radius = root.boundingBox.getSize(new THREE.Vector3()).length() / 2;
-						root.boundingSphere = new THREE.Sphere(center, radius);
+						var radius = root.boundingBox.getSize(new THREE$1.Vector3()).length() / 2;
+						root.boundingSphere = new THREE$1.Sphere(center, radius);
 					}
 
-					var bbSize = node.boundingBox.getSize(new THREE.Vector3());
+					var bbSize = node.boundingBox.getSize(new THREE$1.Vector3());
 					node.spacing = ((bbSize.x + bbSize.y + bbSize.z) / 3) / 75;
 					node.estimatedSpacing = node.spacing;
 
@@ -8362,18 +8541,18 @@ void main()
 	{
 		DEFAULT:
 		{
-			0: new THREE.Vector4(0.5, 0.5, 0.5, 1.0),
-			1: new THREE.Vector4(0.5, 0.5, 0.5, 1.0),
-			2: new THREE.Vector4(0.63, 0.32, 0.18, 1.0),
-			3: new THREE.Vector4(0.0, 1.0, 0.0, 1.0),
-			4: new THREE.Vector4(0.0, 0.8, 0.0, 1.0),
-			5: new THREE.Vector4(0.0, 0.6, 0.0, 1.0),
-			6: new THREE.Vector4(1.0, 0.66, 0.0, 1.0),
-			7: new THREE.Vector4(1.0, 0, 1.0, 1.0),
-			8: new THREE.Vector4(1.0, 0, 0.0, 1.0),
-			9: new THREE.Vector4(0.0, 0.0, 1.0, 1.0),
-			12: new THREE.Vector4(1.0, 1.0, 0.0, 1.0),
-			DEFAULT: new THREE.Vector4(0.3, 0.6, 0.6, 0.5)
+			0: new THREE$1.Vector4(0.5, 0.5, 0.5, 1.0),
+			1: new THREE$1.Vector4(0.5, 0.5, 0.5, 1.0),
+			2: new THREE$1.Vector4(0.63, 0.32, 0.18, 1.0),
+			3: new THREE$1.Vector4(0.0, 1.0, 0.0, 1.0),
+			4: new THREE$1.Vector4(0.0, 0.8, 0.0, 1.0),
+			5: new THREE$1.Vector4(0.0, 0.6, 0.0, 1.0),
+			6: new THREE$1.Vector4(1.0, 0.66, 0.0, 1.0),
+			7: new THREE$1.Vector4(1.0, 0, 1.0, 1.0),
+			8: new THREE$1.Vector4(1.0, 0, 0.0, 1.0),
+			9: new THREE$1.Vector4(0.0, 0.0, 1.0, 1.0),
+			12: new THREE$1.Vector4(1.0, 1.0, 0.0, 1.0),
+			DEFAULT: new THREE$1.Vector4(0.3, 0.6, 0.6, 0.5)
 		}
 	};
 
@@ -8440,7 +8619,7 @@ void main()
 			{
 				pointcloud.name = name;
 			}
-			
+
 			callback(
 			{
 				type: "pointcloud_loaded",
@@ -8488,6 +8667,16 @@ void main()
 				if(geometry !== undefined)
 				{
 					loaded(new PointCloudArena4D(geometry));
+				}
+			});
+		}
+		else if (path.indexOf("/") > 0)
+		{
+			POCLoaderPhp.load(path, function(geometry)
+			{
+				if(geometry !== undefined)
+				{
+					loaded(new PointCloudOctree(geometry));
 				}
 			});
 		}
@@ -8701,7 +8890,7 @@ void main()
 
 				if(pointcloud.showBoundingBox && !node.boundingBoxNode && node.getBoundingBox)
 				{
-					var boxHelper = new THREE.Box3Helper(node.getBoundingBox());
+					var boxHelper = new THREE$1.Box3Helper(node.getBoundingBox());
 					boxHelper.matrixAutoUpdate = false;
 					pointcloud.boundingBoxNodes.push(boxHelper);
 					node.boundingBoxNode = boxHelper;
@@ -8728,7 +8917,7 @@ void main()
 				//Perspective camera
 				if(camera.isPerspectiveCamera)
 				{
-					var sphere = child.getBoundingSphere(new THREE.Sphere());
+					var sphere = child.getBoundingSphere(new THREE$1.Sphere());
 					var center = sphere.center;
 					var distance = sphere.center.distanceTo(camObjPos);
 
@@ -8757,7 +8946,7 @@ void main()
 				{
 					//TODO <IMPROVE VISIBILITY>
 					var bb = child.getBoundingBox();
-					var distance = child.getBoundingSphere(new THREE.Sphere()).center.distanceTo(camObjPos);
+					var distance = child.getBoundingSphere(new THREE$1.Sphere()).center.distanceTo(camObjPos);
 					var diagonal = bb.max.clone().sub(bb.min).length();
 					weight = diagonal / distance;
 				}
@@ -8774,13 +8963,13 @@ void main()
 
 		//Update DEM
 		var candidates = pointclouds.filter(p => (p.generateDEM && p.dem instanceof DEM));
-		
+
 		for(var pointcloud of candidates)
 		{
 			var updatingNodes = pointcloud.visibleNodes.filter(n => n.getLevel() <= Global.maxDEMLevel);
 			pointcloud.dem.update(updatingNodes);
 		}
-		
+
 		for(var i = 0; i < Math.min(Global.maxNodesLoading, unloadedGeometry.length); i++)
 		{
 			unloadedGeometry[i].load();
@@ -8834,7 +9023,7 @@ void main()
 
 			//Frustum in object space
 			camera.updateMatrixWorld();
-			var frustum = new THREE.Frustum();
+			var frustum = new THREE$1.Frustum();
 			var viewI = camera.matrixWorldInverse;
 			var world = pointcloud.matrixWorld;
 
@@ -8844,15 +9033,15 @@ void main()
 			frustumCam.updateProjectionMatrix();
 			var proj = camera.projectionMatrix;
 
-			var fm = new THREE.Matrix4().multiply(proj).multiply(viewI).multiply(world);
+			var fm = new THREE$1.Matrix4().multiply(proj).multiply(viewI).multiply(world);
 			frustum.setFromMatrix(fm);
 			frustums.push(frustum);
 
 			//Camera position in object space
 			var view = camera.matrixWorld;
-			var worldI = new THREE.Matrix4().getInverse(world);
-			var camMatrixObject = new THREE.Matrix4().multiply(worldI).multiply(view);
-			var camObjPos = new THREE.Vector3().setFromMatrixPosition(camMatrixObject);
+			var worldI = new THREE$1.Matrix4().getInverse(world);
+			var camMatrixObject = new THREE$1.Matrix4().multiply(worldI).multiply(view);
+			var camObjPos = new THREE$1.Vector3().setFromMatrixPosition(camMatrixObject);
 			camObjPositions.push(camObjPos);
 
 			if(pointcloud.visible && pointcloud.root !== null)
@@ -8888,7 +9077,7 @@ void main()
 	{
 		constructor()
 		{
-			this.boundingBox = new THREE.Box3();
+			this.boundingBox = new THREE$1.Box3();
 			this.numPoints = 0;
 			this.data = {};
 		}
@@ -8944,101 +9133,101 @@ void main()
 	{
 		var extension;
 
-		if(p === THREE.RepeatWrapping) return gl.REPEAT;
-		if(p === THREE.ClampToEdgeWrapping) return gl.CLAMP_TO_EDGE;
-		if(p === THREE.MirroredRepeatWrapping) return gl.MIRRORED_REPEAT;
+		if(p === THREE$1.RepeatWrapping) return gl.REPEAT;
+		if(p === THREE$1.ClampToEdgeWrapping) return gl.CLAMP_TO_EDGE;
+		if(p === THREE$1.MirroredRepeatWrapping) return gl.MIRRORED_REPEAT;
 
-		if(p === THREE.NearestFilter) return gl.NEAREST;
-		if(p === THREE.NearestMipMapNearestFilter) return gl.NEAREST_MIPMAP_NEAREST;
-		if(p === THREE.NearestMipMapLinearFilter) return gl.NEAREST_MIPMAP_LINEAR;
+		if(p === THREE$1.NearestFilter) return gl.NEAREST;
+		if(p === THREE$1.NearestMipMapNearestFilter) return gl.NEAREST_MIPMAP_NEAREST;
+		if(p === THREE$1.NearestMipMapLinearFilter) return gl.NEAREST_MIPMAP_LINEAR;
 
-		if(p === THREE.LinearFilter) return gl.LINEAR;
-		if(p === THREE.LinearMipMapNearestFilter) return gl.LINEAR_MIPMAP_NEAREST;
-		if(p === THREE.LinearMipMapLinearFilter) return gl.LINEAR_MIPMAP_LINEAR;
+		if(p === THREE$1.LinearFilter) return gl.LINEAR;
+		if(p === THREE$1.LinearMipMapNearestFilter) return gl.LINEAR_MIPMAP_NEAREST;
+		if(p === THREE$1.LinearMipMapLinearFilter) return gl.LINEAR_MIPMAP_LINEAR;
 
-		if(p === THREE.UnsignedByteType) return gl.UNSIGNED_BYTE;
-		if(p === THREE.UnsignedShort4444Type) return gl.UNSIGNED_SHORT_4_4_4_4;
-		if(p === THREE.UnsignedShort5551Type) return gl.UNSIGNED_SHORT_5_5_5_1;
-		if(p === THREE.UnsignedShort565Type) return gl.UNSIGNED_SHORT_5_6_5;
+		if(p === THREE$1.UnsignedByteType) return gl.UNSIGNED_BYTE;
+		if(p === THREE$1.UnsignedShort4444Type) return gl.UNSIGNED_SHORT_4_4_4_4;
+		if(p === THREE$1.UnsignedShort5551Type) return gl.UNSIGNED_SHORT_5_5_5_1;
+		if(p === THREE$1.UnsignedShort565Type) return gl.UNSIGNED_SHORT_5_6_5;
 
-		if(p === THREE.ByteType) return gl.BYTE;
-		if(p === THREE.ShortType) return gl.SHORT;
-		if(p === THREE.UnsignedShortType) return gl.UNSIGNED_SHORT;
-		if(p === THREE.IntType) return gl.INT;
-		if(p === THREE.UnsignedIntType) return gl.UNSIGNED_INT;
-		if(p === THREE.FloatType) return gl.FLOAT;
+		if(p === THREE$1.ByteType) return gl.BYTE;
+		if(p === THREE$1.ShortType) return gl.SHORT;
+		if(p === THREE$1.UnsignedShortType) return gl.UNSIGNED_SHORT;
+		if(p === THREE$1.IntType) return gl.INT;
+		if(p === THREE$1.UnsignedIntType) return gl.UNSIGNED_INT;
+		if(p === THREE$1.FloatType) return gl.FLOAT;
 
-		if(p === THREE.HalfFloatType)
+		if(p === THREE$1.HalfFloatType)
 		{
 			extension = extensions.get("OES_texture_half_float");
 			if(extension !== null) return extension.HALF_FLOAT_OES;
 		}
 
-		if(p === THREE.AlphaFormat) return gl.ALPHA;
-		if(p === THREE.RGBFormat) return gl.RGB;
-		if(p === THREE.RGBAFormat) return gl.RGBA;
-		if(p === THREE.LuminanceFormat) return gl.LUMINANCE;
-		if(p === THREE.LuminanceAlphaFormat) return gl.LUMINANCE_ALPHA;
-		if(p === THREE.DepthFormat) return gl.DEPTH_COMPONENT;
-		if(p === THREE.DepthStencilFormat) return gl.DEPTH_STENCIL;
+		if(p === THREE$1.AlphaFormat) return gl.ALPHA;
+		if(p === THREE$1.RGBFormat) return gl.RGB;
+		if(p === THREE$1.RGBAFormat) return gl.RGBA;
+		if(p === THREE$1.LuminanceFormat) return gl.LUMINANCE;
+		if(p === THREE$1.LuminanceAlphaFormat) return gl.LUMINANCE_ALPHA;
+		if(p === THREE$1.DepthFormat) return gl.DEPTH_COMPONENT;
+		if(p === THREE$1.DepthStencilFormat) return gl.DEPTH_STENCIL;
 
-		if(p === THREE.AddEquation) return gl.FUNC_ADD;
-		if(p === THREE.SubtractEquation) return gl.FUNC_SUBTRACT;
-		if(p === THREE.ReverseSubtractEquation) return gl.FUNC_REVERSE_SUBTRACT;
+		if(p === THREE$1.AddEquation) return gl.FUNC_ADD;
+		if(p === THREE$1.SubtractEquation) return gl.FUNC_SUBTRACT;
+		if(p === THREE$1.ReverseSubtractEquation) return gl.FUNC_REVERSE_SUBTRACT;
 
-		if(p === THREE.ZeroFactor) return gl.ZERO;
-		if(p === THREE.OneFactor) return gl.ONE;
-		if(p === THREE.SrcColorFactor) return gl.SRC_COLOR;
-		if(p === THREE.OneMinusSrcColorFactor) return gl.ONE_MINUS_SRC_COLOR;
-		if(p === THREE.SrcAlphaFactor) return gl.SRC_ALPHA;
-		if(p === THREE.OneMinusSrcAlphaFactor) return gl.ONE_MINUS_SRC_ALPHA;
-		if(p === THREE.DstAlphaFactor) return gl.DST_ALPHA;
-		if(p === THREE.OneMinusDstAlphaFactor) return gl.ONE_MINUS_DST_ALPHA;
+		if(p === THREE$1.ZeroFactor) return gl.ZERO;
+		if(p === THREE$1.OneFactor) return gl.ONE;
+		if(p === THREE$1.SrcColorFactor) return gl.SRC_COLOR;
+		if(p === THREE$1.OneMinusSrcColorFactor) return gl.ONE_MINUS_SRC_COLOR;
+		if(p === THREE$1.SrcAlphaFactor) return gl.SRC_ALPHA;
+		if(p === THREE$1.OneMinusSrcAlphaFactor) return gl.ONE_MINUS_SRC_ALPHA;
+		if(p === THREE$1.DstAlphaFactor) return gl.DST_ALPHA;
+		if(p === THREE$1.OneMinusDstAlphaFactor) return gl.ONE_MINUS_DST_ALPHA;
 
-		if(p === THREE.DstColorFactor) return gl.DST_COLOR;
-		if(p === THREE.OneMinusDstColorFactor) return gl.ONE_MINUS_DST_COLOR;
-		if(p === THREE.SrcAlphaSaturateFactor) return gl.SRC_ALPHA_SATURATE;
+		if(p === THREE$1.DstColorFactor) return gl.DST_COLOR;
+		if(p === THREE$1.OneMinusDstColorFactor) return gl.ONE_MINUS_DST_COLOR;
+		if(p === THREE$1.SrcAlphaSaturateFactor) return gl.SRC_ALPHA_SATURATE;
 
-		if(p === THREE.RGB_S3TC_DXT1_Format || p === RGBA_S3TC_DXT1_Format || p === THREE.RGBA_S3TC_DXT3_Format || p === RGBA_S3TC_DXT5_Format)
+		if(p === THREE$1.RGB_S3TC_DXT1_Format || p === RGBA_S3TC_DXT1_Format || p === THREE$1.RGBA_S3TC_DXT3_Format || p === RGBA_S3TC_DXT5_Format)
 		{
 			extension = extensions.get("WEBGL_compressed_texture_s3tc");
 
 			if(extension !== null)
 			{
-				if(p === THREE.RGB_S3TC_DXT1_Format) return extension.COMPRESSED_RGB_S3TC_DXT1_EXT;
-				if(p === THREE.RGBA_S3TC_DXT1_Format) return extension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
-				if(p === THREE.RGBA_S3TC_DXT3_Format) return extension.COMPRESSED_RGBA_S3TC_DXT3_EXT;
-				if(p === THREE.RGBA_S3TC_DXT5_Format) return extension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
+				if(p === THREE$1.RGB_S3TC_DXT1_Format) return extension.COMPRESSED_RGB_S3TC_DXT1_EXT;
+				if(p === THREE$1.RGBA_S3TC_DXT1_Format) return extension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
+				if(p === THREE$1.RGBA_S3TC_DXT3_Format) return extension.COMPRESSED_RGBA_S3TC_DXT3_EXT;
+				if(p === THREE$1.RGBA_S3TC_DXT5_Format) return extension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
 			}
 		}
 
-		if(p === THREE.RGB_PVRTC_4BPPV1_Format || p === THREE.RGB_PVRTC_2BPPV1_Format || p === THREE.RGBA_PVRTC_4BPPV1_Format || p === THREE.RGBA_PVRTC_2BPPV1_Format)
+		if(p === THREE$1.RGB_PVRTC_4BPPV1_Format || p === THREE$1.RGB_PVRTC_2BPPV1_Format || p === THREE$1.RGBA_PVRTC_4BPPV1_Format || p === THREE$1.RGBA_PVRTC_2BPPV1_Format)
 		{
 			extension = extensions.get("WEBGL_compressed_texture_pvrtc");
 
 			if(extension !== null)
 			{
-				if(p === THREE.RGB_PVRTC_4BPPV1_Format) return extension.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
-				if(p === THREE.RGB_PVRTC_2BPPV1_Format) return extension.COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
-				if(p === THREE.RGBA_PVRTC_4BPPV1_Format) return extension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
-				if(p === THREE.RGBA_PVRTC_2BPPV1_Format) return extension.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+				if(p === THREE$1.RGB_PVRTC_4BPPV1_Format) return extension.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+				if(p === THREE$1.RGB_PVRTC_2BPPV1_Format) return extension.COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
+				if(p === THREE$1.RGBA_PVRTC_4BPPV1_Format) return extension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+				if(p === THREE$1.RGBA_PVRTC_2BPPV1_Format) return extension.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
 			}
 		}
 
-		if(p === THREE.RGB_ETC1_Format)
+		if(p === THREE$1.RGB_ETC1_Format)
 		{
 			extension = extensions.get("WEBGL_compressed_texture_etc1");
 			if(extension !== null) return extension.COMPRESSED_RGB_ETC1_WEBGL;
 		}
 
-		if(p === THREE.MinEquation || p === THREE.MaxEquation)
+		if(p === THREE$1.MinEquation || p === THREE$1.MaxEquation)
 		{
 			extension = extensions.get("EXT_blend_minmax");
 
 			if(extension !== null)
 			{
-				if(p === THREE.MinEquation) return extension.MIN_EXT;
-				if(p === THREE.MaxEquation) return extension.MAX_EXT;
+				if(p === THREE$1.MinEquation) return extension.MIN_EXT;
+				if(p === THREE$1.MaxEquation) return extension.MAX_EXT;
 			}
 		}
 
@@ -9099,7 +9288,7 @@ void main()
 			gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultiplyAlpha);
 			gl.pixelStorei(gl.UNPACK_ALIGNMENT, texture.unpackAlignment);
 
-			if(texture instanceof THREE.DataTexture)
+			if(texture instanceof THREE$1.DataTexture)
 			{
 				data = texture.image.data;
 
@@ -9111,7 +9300,7 @@ void main()
 
 				gl.texImage2D(this.target, level, internalFormat, width, height, border, srcFormat, srcType, data);
 			}
-			else if(texture instanceof THREE.CanvasTexture)
+			else if(texture instanceof THREE$1.CanvasTexture)
 			{
 				data = texture.image;
 
@@ -9346,7 +9535,7 @@ void main()
 		setUniform(name, value)
 		{
 
-			if(value.constructor === THREE.Matrix4)
+			if(value.constructor === THREE$1.Matrix4)
 			{
 				this.setUniformMatrix4(name, value);
 			}
@@ -9413,11 +9602,11 @@ void main()
 	 * 
 	 * Also takes care of geometry ajustments to allow the point clouds to be frustum culled.
 	 */
-	class BasicGroup extends THREE.Mesh
+	class BasicGroup extends THREE$1.Mesh
 	{
 		constructor()
 		{
-			super(new THREE.Geometry(), new THREE.MeshBasicMaterial({opacity:0.0, wireframe:false, transparent:true}));
+			super(new THREE$1.Geometry(), new THREE$1.MeshBasicMaterial({opacity:0.0, wireframe:false, transparent:true}));
 
 			this.rotation.set(-Math.PI / 2, 0, 0);
 
@@ -9466,13 +9655,13 @@ void main()
 		{
 			var box = this.getBoundingBox();
 			
-			var size = box.getSize(new THREE.Vector3());
-			var center = box.getCenter(new THREE.Vector3());
+			var size = box.getSize(new THREE$1.Vector3());
+			var center = box.getCenter(new THREE$1.Vector3());
 
-			var matrix = new THREE.Matrix4();
+			var matrix = new THREE$1.Matrix4();
 			matrix.makeTranslation(center.x, -center.z, center.y);
 
-			var geometry = new THREE.BoxBufferGeometry(size.x, size.z, size.y);
+			var geometry = new THREE$1.BoxBufferGeometry(size.x, size.z, size.y);
 			geometry.applyMatrix(matrix);
 
 			this.geometry = geometry;
@@ -9485,7 +9674,7 @@ void main()
 		 */
 		add(object)
 		{
-			THREE.Object3D.prototype.add.call(this, object);
+			THREE$1.Object3D.prototype.add.call(this, object);
 
 			if(object instanceof PointCloudTree)
 			{
@@ -9503,7 +9692,7 @@ void main()
 		 */
 		remove(object)
 		{
-			THREE.Object3D.prototype.remove.call(this, object);
+			THREE$1.Object3D.prototype.remove.call(this, object);
 
 			if(object instanceof PointCloudTree)
 			{
@@ -9521,7 +9710,7 @@ void main()
 		 */
 		getBoundingBox()
 		{
-			var box = new THREE.Box3();
+			var box = new THREE$1.Box3();
 
 			this.updateMatrixWorld(true);
 
@@ -9557,7 +9746,7 @@ void main()
 
 				var lpos = position.clone().sub(pointcloud.position);
 				lpos.z = 0;
-				var ray = new THREE.Ray(lpos, new THREE.Vector3(0, 0, 1));
+				var ray = new THREE$1.Ray(lpos, new THREE$1.Vector3(0, 0, 1));
 
 				var stack = [pointcloud.root];
 				while(stack.length > 0)
@@ -9774,7 +9963,7 @@ void main()
 			var material = octree.material;
 			var view = camera.matrixWorldInverse;
 
-			var worldView = new THREE.Matrix4();
+			var worldView = new THREE$1.Matrix4();
 			var mat4holder = new Float32Array(16);
 
 			for(var node of nodes)
@@ -9936,8 +10125,8 @@ void main()
 			var view = camera.matrixWorldInverse;
 			var viewInv = camera.matrixWorld;
 			var proj = camera.projectionMatrix;
-			var projInv = new THREE.Matrix4().getInverse(proj);
-			var worldView = new THREE.Matrix4();
+			var projInv = new THREE$1.Matrix4().getInverse(proj);
+			var worldView = new THREE$1.Matrix4();
 
 			var visibilityTextureData = null;
 			var currentTextureBindingPoint = 0;
@@ -10046,7 +10235,7 @@ void main()
 			}
 
 			//Camera configuration
-			if(camera instanceof THREE.OrthographicCamera)
+			if(camera instanceof THREE$1.OrthographicCamera)
 			{
 				shader.setUniform("uUseOrthographicCamera", true);
 				shader.setUniform("uOrthoWidth", camera.right - camera.left); 

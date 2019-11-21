@@ -1,5 +1,6 @@
 "use strict";
 
+import * as THREE from 'three';
 import {WebGLTexture} from "./WebGLTexture.js";
 import {AttributeLocations} from "./Potree.js";
 

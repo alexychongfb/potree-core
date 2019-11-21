@@ -1,4 +1,5 @@
 "use strict";
+import * as THREE from 'three';
 
 import {WebGLBuffer} from "../WebGLBuffer.js";
 import {BasicGroup} from "./BasicGroup.js";

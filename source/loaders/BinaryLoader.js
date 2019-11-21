@@ -1,5 +1,7 @@
 "use strict";
 
+import * as THREE from 'three';
+
 import {PointAttributeNames} from "../PointAttributes.js";
 import {VersionUtils} from "../utils/VersionUtils.js";
 import {WorkerManager} from "../utils/WorkerManager.js";
@@ -35,7 +37,8 @@ class BinaryLoader
 		{
 			url += ".bin";
 		}
-		
+		var url = node.pcoGeometry.url + 'data/?id=' + node.name;
+
 		var self = this;
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, true);
