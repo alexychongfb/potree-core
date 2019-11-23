@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../../lib/threejs/three.min.js';
 
 import {PointCloudOctreeGeometryNode} from "./geometries/PointCloudOctreeGeometry.js";
 import {HelperUtils} from "../utils/HelperUtils.js";

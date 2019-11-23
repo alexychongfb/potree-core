@@ -1,5 +1,5 @@
 "use strict";
-import * as THREE from 'three';
+import * as THREE from '../../lib/threejs/three.min.js';
 
 //index is in order xyzxyzxyz
 class DEMNode

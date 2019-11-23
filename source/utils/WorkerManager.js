@@ -1,7 +1,14 @@
 "use strict";
 
 import {Global} from "../Global.js";
-
+// Force workers to be included
+import BinaryDecoderWorker from "../workers/BinaryDecoderWorker.js";
+//import LASLAZWorker from "../workers/LASLAZWorker";
+import LASDecoderWorker from "../workers/LASDecoderWorker.js";
+//import GreyhoundBinaryDecoderWorker from "../workers/GreyhoundBinaryDecoderWorker";
+import DEMWorker from "../workers/DEMWorker.js";
+import EptLaszipDecoderWorker from "../workers/EptLaszipDecoderWorker.js";
+import EptBinaryDecoderWorker from "../workers/EptBinaryDecoderWorker.js";
 /**
  * The worker manager is responsible for creating and managing worker instances.
  */
@@ -26,8 +33,25 @@ class WorkerManager
 		{
 			return this.workers[type].pop();
 		}
-		
-		return new Worker(Global.workerPath + WorkerManager.URLS[type]);
+
+		switch (type) {
+		case 0:
+			return new BinaryDecoderWorker();
+		case 1:
+			throw "LASLAZWorker not implemented";
+		case 2:
+			return new LASDecoderWorker();
+		case 3:
+			throw "GreyhoundBinaryDecoderWorker not implemented";
+		case 4:
+			return new DEMWorker();
+		case 5:
+			return new EptLaszipDecoderWorker();
+		case 6:
+			return new EptBinaryDecoderWorker();
+		default:
+			throw "Unknown worker requested";
+		};
 	}
 
 	/**
@@ -71,7 +95,7 @@ WorkerManager.DEM = 4;
 WorkerManager.EPT_LAS_ZIP_DECODER = 5;
 WorkerManager.EPT_BINARY_DECODER = 6;
 
-WorkerManager.URLS = 
+WorkerManager.URLS =
 [
 	"/workers/BinaryDecoderWorker.js",
 	"/workers/LASLAZWorker.js",

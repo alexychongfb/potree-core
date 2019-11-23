@@ -1,5 +1,5 @@
 "use strict";
-import * as THREE from 'three';
+import * as THREE from '../../lib/threejs/three.min.js';
 
 import {WebGLBuffer} from "../WebGLBuffer.js";
 import {BasicGroup} from "./BasicGroup.js";
@@ -31,7 +31,7 @@ class Group extends BasicGroup
 		this.types.set(Float32Array, gl.FLOAT);
 		this.types.set(Uint8Array, gl.UNSIGNED_BYTE);
 		this.types.set(Uint16Array, gl.UNSIGNED_SHORT);
-		
+
 		var extVAO = gl.getExtension("OES_vertex_array_object");
 		gl.createVertexArray = extVAO.createVertexArrayOES.bind(extVAO);
 		gl.bindVertexArray = extVAO.bindVertexArrayOES.bind(extVAO);
@@ -257,7 +257,7 @@ class Group extends BasicGroup
 				for(var i = 0; i < material.clipPolygons.length; i++)
 				{
 					var clipPolygon = material.clipPolygons[i];
-					
+
 					for(var j = 0; j < clipPolygon.markers.length; j++)
 					{
 						flattenedVertices[i * 24 + (j * 3 + 0)] = clipPolygon.markers[j].position.x;
@@ -450,7 +450,7 @@ class Group extends BasicGroup
 		shader.setUniform1f("fov", Math.PI * camera.fov / 180);
 		shader.setUniform1f("near", camera.near);
 		shader.setUniform1f("far", camera.far);
-		
+
 		//Set log
 		if(renderer.capabilities.logarithmicDepthBuffer)
 		{
@@ -461,7 +461,7 @@ class Group extends BasicGroup
 		if(camera instanceof THREE.OrthographicCamera)
 		{
 			shader.setUniform("uUseOrthographicCamera", true);
-			shader.setUniform("uOrthoWidth", camera.right - camera.left); 
+			shader.setUniform("uOrthoWidth", camera.right - camera.left);
 			shader.setUniform("uOrthoHeight", camera.top - camera.bottom);
 		}
 		else

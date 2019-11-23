@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../lib/threejs/three.min.js';
 
 import {GreyhoundLoader} from "./loaders/GreyhoundLoader.js";
 import {POCLoader} from "./loaders/POCLoader.js";

@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../../../lib/threejs/three.min.js';
 
 import {HelperUtils} from "../../utils/HelperUtils.js";
 import {Gradients} from "../../Gradients.js";
@@ -12,7 +12,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	constructor(parameters = {})
 	{
 		super();
-		
+
 		this.visibleNodesTexture = HelperUtils.generateDataTexture(2048, 1, new THREE.Color(0xffffff));
 		this.visibleNodesTexture.minFilter = THREE.NearestFilter;
 		this.visibleNodesTexture.magFilter = THREE.NearestFilter;
@@ -49,12 +49,12 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 
 		this.clipBoxes = [];
 		this.clipPolygons = [];
-		
+
 		this.gradientTexture = PointCloudMaterial.generateGradientTexture(this._gradient);
 		this.lights = false;
 		this.fog = false;
 		this.defines = new Map();
-		
+
 		this.attributes =
 		{
 			position: {type: 'fv', value: []},
@@ -134,7 +134,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 			uFilterNumberOfReturnsRange: {type: "fv", value: [0, 7]},
 			uFilterGPSTimeClipRange: {type: "fv", value: [0, 7]},
 		};
-		
+
 		this.classification = Classification.DEFAULT;
 		this.defaultAttributeValues.normal = [0, 0, 0];
 		this.defaultAttributeValues.classification = [0, 0, 0];
@@ -352,7 +352,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 		}
 
 		this.uniforms.clipBoxes.value = new Float32Array(this.clipBoxes.length * 16);
-		
+
 		for(var i = 0; i < this.clipBoxes.length; i++)
 		{
 			var box = clipBoxes[i];
@@ -386,7 +386,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this._gradient;
 	}
-	
+
 	set gradient(value)
 	{
 		if(this._gradient !== value)
@@ -401,7 +401,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this.uniforms.useOrthographicCamera.value;
 	}
-	
+
 	set useOrthographicCamera(value)
 	{
 		if(this.uniforms.useOrthographicCamera.value !== value)
@@ -414,7 +414,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this._classification;
 	}
-	
+
 	set classification(value)
 	{
 		var copy = {};
@@ -422,7 +422,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 		{
 			copy[key] = value[key].clone();
 		}
-		
+
 		var isEqual = false;
 		if(this._classification === undefined)
 		{
@@ -444,7 +444,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 			this.recomputeClassification();
 		}
 	}
-	
+
 	recomputeClassification()
 	{
 		this.classificationTexture = PointCloudMaterial.generateClassificationTexture(this._classification);
@@ -460,7 +460,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this._numSnapshots;
 	}
-	
+
 	set numSnapshots(value)
 	{
 		this._numSnapshots = value;
@@ -470,7 +470,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this._snapEnabled;
 	}
-	
+
 	set snapEnabled(value)
 	{
 		if(this._snapEnabled !== value)
@@ -484,7 +484,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this.uniforms.spacing.value;
 	}
-	
+
 	set spacing(value)
 	{
 		if(this.uniforms.spacing.value !== value)
@@ -497,7 +497,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this._useClipBox;
 	}
-	
+
 	set useClipBox(value)
 	{
 		if(this._useClipBox !== value)
@@ -511,7 +511,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this.uniforms.clipTask.value;
 	}
-	
+
 	set clipTask(mode)
 	{
 		this.uniforms.clipTask.value = mode;
@@ -521,7 +521,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this.uniforms.clipMethod.value;
 	}
-	
+
 	set clipMethod(mode)
 	{
 		this.uniforms.clipMethod.value = mode;
@@ -531,7 +531,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this._weighted;
 	}
-	
+
 	set weighted(value)
 	{
 		if(this._weighted !== value)
@@ -545,7 +545,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this.uniforms.fov.value;
 	}
-	
+
 	set fov(value)
 	{
 		if(this.uniforms.fov.value !== value)
@@ -559,7 +559,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this.uniforms.screenWidth.value;
 	}
-	
+
 	set screenWidth(value)
 	{
 		if(this.uniforms.screenWidth.value !== value)
@@ -573,7 +573,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this.uniforms.screenHeight.value;
 	}
-	
+
 	set screenHeight(value)
 	{
 		if(this.uniforms.screenHeight.value !== value)
@@ -587,7 +587,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this.uniforms.near.value;
 	}
-	
+
 	set near(value)
 	{
 		if(this.uniforms.near.value !== value)
@@ -600,7 +600,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this.uniforms.far.value;
 	}
-	
+
 	set far(value)
 	{
 		if(this.uniforms.far.value !== value)
@@ -613,7 +613,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this.uniforms.uOpacity.value;
 	}
-	
+
 	set opacity(value)
 	{
 		if(this.uniforms && this.uniforms.uOpacity)
@@ -640,7 +640,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this._pointColorType;
 	}
-	
+
 	set pointColorType(value)
 	{
 		if(this._pointColorType !== value)
@@ -664,7 +664,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this._pointSizeType;
 	}
-	
+
 	set pointSizeType(value)
 	{
 		if(this._pointSizeType !== value)
@@ -688,7 +688,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this._useEDL;
 	}
-	
+
 	set useEDL(value)
 	{
 		if(this._useEDL !== value)
@@ -702,7 +702,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this.uniforms.uColor.value;
 	}
-	
+
 	set color(value)
 	{
 		if(!this.uniforms.uColor.value.equals(value))
@@ -725,7 +725,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	{
 		return this._shape;
 	}
-	
+
 	set shape(value)
 	{
 		if(this._shape !== value)
@@ -1089,7 +1089,7 @@ class PointCloudMaterial extends THREE.RawShaderMaterial
 	static generateGradientTexture(gradient)
 	{
 		var size = 64;
-		
+
 		//Create canvas
 		var canvas = document.createElement("canvas");
 		canvas.width = size;

@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../../../lib/threejs/three.min.js';
 
 import {GreyhoundLoader} from "../../loaders/GreyhoundLoader.js";
 import {Global} from "../../Global.js";
@@ -363,7 +363,7 @@ PointCloudGreyhoundGeometryNode.prototype.dispose = function()
 			var handler = this.oneTimeDisposeHandlers[i];
 			handler();
 		}
-		
+
 		this.oneTimeDisposeHandlers = [];
 	}
 };

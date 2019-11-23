@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../../lib/threejs/three.min.js';
 
 import {BinaryLoader} from "./BinaryLoader.js";
 import {LASLAZLoader} from "./LASLAZLoader.js";
@@ -28,7 +28,7 @@ class POCLoader
 	{
 		var pco = new PointCloudOctreeGeometry();
 		pco.url = url;
-		
+
 		var xhr = new XMLHttpRequest();
 		xhr.overrideMimeType("text/plain");
 		xhr.open("GET", url, true);

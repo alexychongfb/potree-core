@@ -1,5 +1,5 @@
 "use strict";
-import * as THREE from 'three';
+import * as THREE from '../../lib/threejs/three.min.js';
 class HelperUtils
 {
 	/**
@@ -47,7 +47,7 @@ class HelperUtils
 
 		var boundingBox = new THREE.Box3();
 		boundingBox.setFromPoints(vertices);
-		
+
 		return boundingBox;
 	};
 };

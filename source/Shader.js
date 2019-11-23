@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../lib/threejs/three.min.js';
 import {WebGLTexture} from "./WebGLTexture.js";
 import {AttributeLocations} from "./Potree.js";
 

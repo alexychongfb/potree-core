@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../../lib/threejs/three.min.js';
 
 import {HelperUtils} from "../utils/HelperUtils.js";
 import {updatePointClouds} from "../Potree.js";
@@ -8,11 +8,11 @@ import {PointCloudTree} from "../pointcloud/PointCloudTree.js";
 
 /**
  * Potree object is a wrapper to use Potree alongside other THREE based frameworks.
- * 
+ *
  * The object can be used a normal Object3D.
- * 
+ *
  * It is based on THREE.Mesh and automatically updates the point cloud based on visibility.
- * 
+ *
  * Also takes care of geometry ajustments to allow the point clouds to be frustum culled.
  */
 class BasicGroup extends THREE.Mesh
@@ -46,7 +46,7 @@ class BasicGroup extends THREE.Mesh
 
 	/**
 	 * Used to update the point cloud visibility relative to a camera.
-	 * 
+	 *
 	 * Called automatically before rendering.
 	 */
 	onBeforeRender(renderer, scene, camera, geometry, material, group)
@@ -61,13 +61,13 @@ class BasicGroup extends THREE.Mesh
 
 	/**
 	 * Recalculate the box geometry attached to this group.
-	 * 
+	 *
 	 * The geometry its not visible and its only used for frustum culling.
 	 */
 	recalculateBoxGeometry()
 	{
 		var box = this.getBoundingBox();
-		
+
 		var size = box.getSize(new THREE.Vector3());
 		var center = box.getCenter(new THREE.Vector3());
 
@@ -82,7 +82,7 @@ class BasicGroup extends THREE.Mesh
 
 	/**
 	 * Add an object as children of this scene.
-	 * 
+	 *
 	 * Point cloud objects are detected and used to recalculate the geometry box used for frustum culling.
 	 */
 	add(object)
@@ -97,10 +97,10 @@ class BasicGroup extends THREE.Mesh
 			this.recalculateBoxGeometry();
 		}
 	}
-	
+
 	/**
 	 * Remove object from group.
-	 * 
+	 *
 	 * Point cloud objects are detected and used to recalculate the geometry box used for frustum culling
 	 */
 	remove(object)
@@ -118,7 +118,7 @@ class BasicGroup extends THREE.Mesh
 		}
 	}
 
-	/** 
+	/**
 	 * Get the point cloud bouding box.
 	 */
 	getBoundingBox()
@@ -139,7 +139,7 @@ class BasicGroup extends THREE.Mesh
 		return box;
 	}
 
-	/** 
+	/**
 	 * Estimate the point cloud height at a given position.
 	 */
 	estimateHeightAt(position)

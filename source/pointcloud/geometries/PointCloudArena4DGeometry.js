@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../../../lib/threejs/three.min.js';
 
 import {PointAttributes, PointAttribute} from "../../PointAttributes.js";
 import {Global} from "../../Global.js";
@@ -87,7 +87,7 @@ class PointCloudArena4DGeometryNode
 
 		var self = this;
 		var url = this.pcoGeometry.url + "?node=" + this.number;
-		
+
 		var xhr = new XMLHttpRequest();
 		xhr.overrideMimeType("text/plain");
 		xhr.open("GET", url, true);
@@ -291,7 +291,7 @@ class PointCloudArena4DGeometry extends THREE.EventDispatcher
 	loadHierarchy()
 	{
 		var url = this.url + "?tree";
-		
+
 		var xhr = new XMLHttpRequest();
 		xhr.overrideMimeType("text/plain");
 		xhr.open("GET", url, true);
@@ -349,7 +349,7 @@ class PointCloudArena4DGeometry extends THREE.EventDispatcher
 				node.level = stack.length;
 				levels = Math.max(levels, node.level);
 
-				
+
 
 				if(stack.length > 0)
 				{
@@ -375,7 +375,7 @@ class PointCloudArena4DGeometry extends THREE.EventDispatcher
 							node.boundingBox.max.z = node.boundingBox.min.z + parentBBSize.z / 2;
 						}
 
-						
+
 						var center = new THREE.Vector3();
 						node.boundingBox.getCenter(center);
 						var radius = node.boundingBox.getSize(new THREE.Vector3()).length() / 2;

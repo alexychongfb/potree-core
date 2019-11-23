@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../../../lib/threejs/three.min.js';
 
 import {Global} from "../../Global.js";
 import {LASFile, LASDecoder} from "../LASLoader.js";

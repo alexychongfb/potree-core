@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../../lib/threejs/three.min.js';
 
 import {HelperUtils} from "../utils/HelperUtils.js";
 import {PointCloudTree, PointCloudTreeNode} from "./PointCloudTree.js";
@@ -460,7 +460,7 @@ class PointCloudArena4D extends PointCloudTree
 
 		renderer.clearTarget(pickState.renderTarget, true, true, true);
 		renderer.setRenderTarget(pickState.renderTarget);
-		
+
 		gl.clearColor(0, 0, 0, 0);
 		renderer.clearTarget(pickState.renderTarget, true, true, true);
 

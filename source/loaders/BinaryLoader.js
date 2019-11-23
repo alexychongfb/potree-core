@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../../lib/threejs/three.min.js';
 
 import {PointAttributeNames} from "../PointAttributes.js";
 import {VersionUtils} from "../utils/VersionUtils.js";

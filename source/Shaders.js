@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../lib/threejs/three.min.js';
 
 var Shaders = {};
 
@@ -148,7 +148,7 @@ float round(float number)
 					numOnes++;
 				}
 			}
-			
+
 			tmp = tmp / 2;
 		}
 
@@ -218,11 +218,11 @@ float round(float number)
 		for(float i = 0.0; i <= 30.0; i++)
 		{
 			float nodeSizeAtLevel = uOctreeSize / pow(2.0, i + uLevel + 0.0);
-			
+
 			vec3 index3d = (position-offset) / nodeSizeAtLevel;
 			index3d = floor(index3d + 0.5);
 			int index = int(round(4.0 * index3d.x + 2.0 * index3d.y + index3d.z));
-			
+
 			vec4 value = texture2D(visibleNodes, vec2(float(iOffset) / 2048.0, 0.0));
 			int mask = int(round(value.r * 255.0));
 
@@ -235,7 +235,7 @@ float round(float number)
 				int advance = advanceG + advanceB + advanceChild;
 
 				iOffset = iOffset + advance;
-				
+
 				depth++;
 			}
 			else
@@ -244,10 +244,10 @@ float round(float number)
 				return value.a * 255.0;
 				//return depth;
 			}
-			
+
 			offset = offset + (vec3(1.0, 1.0, 1.0) * nodeSizeAtLevel * 0.5) * index3d;
 		}
-			
+
 		return depth;
 	}
 
@@ -261,11 +261,11 @@ float round(float number)
 		for(float i = 0.0; i <= 30.0; i++)
 		{
 			float nodeSizeAtLevel = uOctreeSize / pow(2.0, i + uLevel + 0.0);
-			
+
 			vec3 index3d = (position-offset) / nodeSizeAtLevel;
 			index3d = floor(index3d + 0.5);
 			int index = int(round(4.0 * index3d.x + 2.0 * index3d.y + index3d.z));
-			
+
 			vec4 value = texture2D(visibleNodes, vec2(float(iOffset) / 2048.0, 0.0));
 			int mask = int(round(value.r * 255.0));
 			float spacingFactor = value.a;
@@ -274,7 +274,7 @@ float round(float number)
 			{
 				spacing = spacing / (255.0 * spacingFactor);
 			}
-			
+
 			if(isBitSet(mask, index))
 			{
 				//there are more visible child nodes at this position
@@ -292,10 +292,10 @@ float round(float number)
 				//no more visible child nodes at this position
 				return spacing;
 			}
-			
+
 			offset = offset + (vec3(1.0, 1.0, 1.0) * nodeSizeAtLevel * 0.5) * index3d;
 		}
-			
+
 		return spacing;
 	}
 
@@ -314,23 +314,23 @@ float round(float number)
 		vec3 offset = vec3(0.0, 0.0, 0.0);
 		float iOffset = 0.0;
 		float depth = 0.0;
-			
-		vec3 size = uBBSize;	
+
+		vec3 size = uBBSize;
 		vec3 pos = position;
-			
+
 		for(float i = 0.0; i <= 1000.0; i++)
 		{
 			vec4 value = texture2D(visibleNodes, vec2(iOffset / 2048.0, 0.0));
-			
+
 			int children = int(value.r * 255.0);
 			float next = value.g * 255.0;
 			int split = int(value.b * 255.0);
-			
+
 			if(next == 0.0)
 			{
 			 	return depth;
 			}
-			
+
 			vec3 splitv = vec3(0.0, 0.0, 0.0);
 			if(split == 1)
 			{
@@ -344,9 +344,9 @@ float round(float number)
 			{
 			 	splitv.z = 1.0;
 			}
-			
+
 			iOffset = iOffset + next;
-			
+
 			float factor = length(pos * splitv / size);
 
 			//Left
@@ -374,8 +374,8 @@ float round(float number)
 			size = size * ((1.0 - (splitv + 1.0) / 2.0) + 0.5);
 			depth++;
 		}
-			
-		return depth;	
+
+		return depth;
 	}
 
 	float getPointSizeAttenuation()
@@ -393,11 +393,11 @@ float getContrastFactor(float contrast)
 vec3 getRGB()
 {
 	vec3 rgb = color;
-	
+
 	rgb = pow(rgb, vec3(rgbGamma));
 	rgb = rgb + rgbBrightness;
 	rgb = clamp(rgb, 0.0, 1.0);
-	
+
 	return rgb;
 }
 
@@ -461,37 +461,37 @@ vec3 getCompositeColor()
 
 	c += wRGB * getRGB();
 	w += wRGB;
-	
+
 	c += wIntensity * getIntensity() * vec3(1.0, 1.0, 1.0);
 	w += wIntensity;
-	
+
 	c += wElevation * getElevation();
 	w += wElevation;
-	
+
 	c += wReturnNumber * getReturnNumber();
 	w += wReturnNumber;
-	
+
 	c += wSourceID * getSourceID();
 	w += wSourceID;
-	
+
 	vec4 cl = wClassification * getClassification();
     c += cl.a * cl.rgb;
 	w += wClassification * cl.a;
 
 	c = c / w;
-	
+
 	if(w == 0.0)
 	{
 		gl_Position = vec4(100.0, 100.0, 100.0, 0.0);
 	}
-	
+
 	return c;
 }
 
 vec3 getColor()
 {
 	vec3 color;
-	
+
 	#ifdef color_type_rgb
 		color = getRGB();
 	#elif defined color_type_height
@@ -518,7 +518,7 @@ vec3 getColor()
 	#elif defined color_type_point_index
 		color = indices.rgb;
 	#elif defined color_type_classification
-		vec4 cl = getClassification(); 
+		vec4 cl = getClassification();
 		color = cl.rgb;
 	#elif defined color_type_return_number
 		color = getReturnNumber();
@@ -531,17 +531,17 @@ vec3 getColor()
 	#elif defined color_type_composite
 		color = getCompositeColor();
 	#endif
-	
+
 	return color;
 }
 
 float getPointSize()
 {
 	float pointSize = 1.0;
-	
+
 	float slope = tan(fov / 2.0);
 	float projFactor = -0.5 * uScreenHeight / (slope * vViewPosition.z);
-	
+
 	float r = uOctreeSpacing * 1.7;
 	vRadius = r;
 
@@ -578,7 +578,7 @@ float getPointSize()
 
 	pointSize = max(minSize, pointSize);
 	pointSize = min(maxSize, pointSize);
-	
+
 	vRadius = pointSize / projFactor;
 
 	return pointSize;
@@ -619,11 +619,11 @@ float getPointSize()
 void doClipping()
 {
 	#if !defined color_type_composite
-		vec4 cl = getClassification(); 
+		vec4 cl = getClassification();
 		if(cl.a == 0.0)
 		{
 			gl_Position = vec4(100.0, 100.0, 100.0, 0.0);
-			
+
 			return;
 		}
 	#endif
@@ -641,7 +641,7 @@ void doClipping()
 
 			insideCount = insideCount + (inside ? 1 : 0);
 			clipVolumesCount++;
-		}	
+		}
 	#endif
 
 	#if defined(num_clippolygons) && num_clippolygons > 0
@@ -730,7 +730,7 @@ void main()
 			{
 				float w = distance;
 				vec3 cGradient = texture2D(gradient, vec2(w, 1.0 - w)).rgb;
-				
+
 				vColor = cGradient;
 			}
 		}
@@ -745,10 +745,10 @@ void main()
 		{
 			vec3 viewPos = (uShadowWorldView[i] * vec4(position, 1.0)).xyz;
 			float distanceToLight = abs(viewPos.z);
-			
+
 			vec4 projPos = uShadowProj[i] * uShadowWorldView[i] * vec4(position, 1);
 			vec3 nc = projPos.xyz / projPos.w;
-			
+
 			float u = nc.x * 0.5 + 0.5;
 			float v = nc.y * 0.5 + 0.5;
 
@@ -847,7 +847,7 @@ void main()
 		float u = (2.0 * gl_PointCoord.x) - 1.0;
 		float v = (2.0 * gl_PointCoord.y) - 1.0;
 	#endif
-	
+
 	#if defined circle_point_shape
 		float cc = (u*u) + (v*v);
 		if(cc > 1.0)
@@ -873,13 +873,13 @@ void main()
 		depth = (pos.z + 1.0) / 2.0;
 
 		gl_FragDepthEXT = depth;
-		
+
 		#if defined color_type_depth
 			color.r = linearDepth;
 			color.g = expDepth;
 		#endif
 	#endif
-	
+
 	` + THREE.ShaderChunk.logdepthbuf_fragment +  `
 
 	#if defined weighted_splats

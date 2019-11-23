@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from '../../../lib/threejs/three.min.js';
 import {EptBinaryLoader} from "../../loaders/ept/EptBinaryLoader";
 import {EptLaszipLoader} from "../../loaders/ept/EptLaszipLoader";
 import {VersionUtils} from "../../utils/VersionUtils.js";
@@ -331,7 +331,7 @@ class PointCloudEptGeometryNode extends PointCloudTreeNode
 				let handler = this.oneTimeDisposeHandlers[i];
 				handler();
 			}
-			
+
 			this.oneTimeDisposeHandlers = [];
 		}
 	}

@@ -1,6 +1,6 @@
 "use strict";
 
-import * as THREE from 'three';
+import * as THREE from '../../../lib/threejs/three.min.js';
 
 import {POCLoader} from "../../loaders/POCLoader.js";
 import {Global} from "../../Global.js";
@@ -241,7 +241,7 @@ class PointCloudOctreeGeometryNode extends PointCloudTreeNode
 
 			node.loadPoints();
 		};
-		
+
 		if((node.level % node.pcoGeometry.hierarchyStepSize) === 0)
 		{
 			var hurl = node.pcoGeometry.octreeDir + "/" + node.getHierarchyPath() + "/" + node.name + ".hrc";
